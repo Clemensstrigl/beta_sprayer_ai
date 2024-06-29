@@ -1,48 +1,51 @@
-from route import Route
+from route import Route_Window
 import math
+from window_cell import *
 
-class Latter ():
+
+
+class Latter(Route_Window):
 
     def __init__(self,hold_config, wall_angle, window_height, window_width, window_resolution, x_padding, y_padding, max_height, max_width, window_center_x_start, window_center_y_start):
         
-        assert(window_height > 0 and window_width > 0)
-        assert(window_center_x_start >= 0 and window_center_y_start >= 0)
-        assert(x_padding >= 0 and x_padding + window_width/2 <= max_width)
-        assert(y_padding >= 0 and y_padding + window_height/2 <= max_height)
-        assert(max_height >= window_height+y_padding and max_width >= window_width)
-        assert(window_center_x_start + window_width/2  <= max_width)
-        assert(window_center_y_start + window_height/2  <= max_height)
-        assert(window_center_x_start - window_width/2  >=0 )
-        assert(window_center_y_start - window_height/2  >= 0)
-        assert(window_resolution > 0)
+        
         
         
         
         
         self.hold_config = hold_config
         self.wall_angle = wall_angle
-        self.window_height = window_height 
-        self.window_width = window_width
-        self.window_resolution = window_resolution
-        self.x_padding = x_padding
-        self.y_padding = y_padding
-        self.max_height= max_height
-        self.max_width = max_width
-        self.window_center_x_start = window_center_x_start
-        self.window_center_y_start = window_center_y_start
-        self.last_hold_added = 0
-
-       
-
-        window_row = [ [] for _ in range(self.window_width/self.window_resolution)]
-        self.window = [window_row for _ in range(self.window_height/self.window_resolution)]
+        
+        super.__init__(window_height, window_width, window_resolution, x_padding, y_padding, max_height, max_width, window_center_x_start, window_center_y_start):
+        
 
     def init_window(self):
 
-        window_y_start = self.window_center_y_start - self.window_height/2
-        window_x_start = self.window_center_x_start - self.window_width/2
-        window_y_end = self.window_center_y_start + self.window_height/2
-        window_x_end = self.window_center_x_start + self.window_width/2
+        
+
+        self.wall_2_Matrix()
+        self.overlay_holds()
+
+            
+    def overlay_holds(self):
+        return
+
+
+    def wall_2_Matrix(self,):
+
+        for rI, row in enumerate(self.window):
+            for cI, cell in enumerate(row):
+                self.window[rI][cI] = Cell(WALL_VOLUME, self.roll, self.pitch, self.wall_quality)
+
+    def get_holds_in_view(self, x, y):
+
+        assert(x >= 0 and x <= self.max_width)
+        assert(y >= 0 and y <= self.max_height)
+
+        window_y_start = y - self.window_height/2
+        window_x_start = x - self.window_width/2
+        window_y_end = y + self.window_height/2
+        window_x_end = x + self.window_width/2
 
         holds_in_view = []
 
@@ -52,16 +55,11 @@ class Latter ():
                         holds_in_view.append(self.hold_config[hold_index])
                     else:
                         break
-
-
-
-
-            
-        for rI, row in enumerate(self.window):
-            for cI, cell in enumerate(row):
-                cell_x_start = rI * self.window_resolution
-                cell_y_start = cI * self.window_resolution
-                
+        
+        self.current_holds_in_view = holds_in_view
+        return
+        
+             
 
     def update_window(self, x_off_set, y_off_set):
 
