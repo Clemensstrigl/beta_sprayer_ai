@@ -21,6 +21,6 @@ class Cell:
         self.matchable = matchable #can more than one hand fit on the hold (based on size of actual hold)
     
     def to_list(self):
-        return [ self.id, self.roll, self.pitch, self.quality, self.matchable]
+        return [self.id, self.roll, self.pitch, self.quality, self.matchable]
 
 
