@@ -39,9 +39,9 @@ class Route_Window():
         self.window = [window_row for _ in range(self.window_height/self.window_resolution)]
 
     def init_window(self):
-        self.wall_2_window()
-        self.get_current_holds_in_view(self.window_center_x, self.window_center_y)
-        self.overlay_holds(self.current_holds_in_view)
+        self.window = self.wall_2_window()
+        self.current_holds_in_view = self.get_current_holds_in_view()
+        self.window = self.overlay_holds(self.current_holds_in_view)
 
             
     def overlay_holds(self, holds):
@@ -76,14 +76,10 @@ class Route_Window():
     def wall_2_window(self):
         return
     
-    def get_current_holds_in_view(self, x = 0, y = 0):
+    def get_current_holds_in_view(self):
         return
         
-    def fill_missing_hold_sections(self, x_off_set=0, y_off_set=0):
-        return
-    
-    def fill_missing_wall_sections(self,x_off_set=0, y_off_set=0):
-        return 
+
 
     def update_window(self, x_off_set, y_off_set):
 
@@ -102,42 +98,14 @@ class Route_Window():
             self.up_or_down = False
 
 
-        self.shift_window_values(x_off_set, y_off_set)
-        self.fill_missing_wall_sections(x_off_set, y_off_set)
-        self.fill_missing_hold_sections(x_off_set, y_off_set)
+        self.window_center_x = self.window_center_x + x_off_set
+        self.window_center_y = self.window_center_y + y_off_set
+
+        self.init_window()
+
         return self.window
 
     
- 
-
-
-    def shift_window_values(self, x_off_set, y_off_set):
-        newWindow = self.window
-
-        #if we go to the left
-        x_range_old = range(0, (self.window_width + x_off_set)//self.window_resolution)
-        x_range_new = range(abs(x_off_set)//self.window_resolution, self.window_width//self.window_resolution)
-
-        # if we go down
-        y_range_new = range(0, (self.window_center_y + y_off_set)//self.window_resolution)
-        y_range_old = range(abs(y_off_set)//self.window_resolution, self.window_height//self.window_resolution)
-
-        
-        if self.left_or_right: #if we go to the right
-            x_range_new=  range(0, (self.window_width - x_off_set)//self.window_resolution)
-            x_range_old = range(abs(x_off_set)//self.window_resolution, self.window_width//self.window_resolution)
-       
-
-        if self.up_or_down: #if we go up
-            y_range_old = range(0, (self.window_center_y - y_off_set)//self.window_resolution)
-            y_range_new = range(abs(y_off_set)//self.window_resolution, self.window_height//self.window_resolution)
-        
-
-        for row_old, row_new in y_range_old, y_range_new:
-            for col_old, col_new in x_range_old, x_range_new:
-                newWindow[row_new][col_new] = self.window[row_old][col_old]
-        
-        self.window = newWindow
     
     def get_window_flattened(self):
         final = []
