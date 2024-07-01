@@ -1,11 +1,13 @@
 from window_cell import *
-import math
+import math, random
 
 
 class Route_Window():
 
-    def __init__(self, window_height, window_width, window_resolution, x_padding, y_padding, max_height, max_width, window_center_x_start, window_center_y_start):
+    def __init__(self, holds, window_height, window_width, window_resolution, x_padding, y_padding, max_height, max_width, window_center_x_start, window_center_y_start):
         
+        assert(type(holds) == list)
+        assert(holds != [])
         assert(window_height > 0 and window_width > 0)
         assert(window_height%window_resolution == 0)
         assert(window_width%window_resolution == 0)
@@ -20,7 +22,7 @@ class Route_Window():
         assert(window_resolution > 0)
         
 
-        
+        self.holds = holds
         self.window_height = window_height 
         self.window_width = window_width
         self.window_resolution = window_resolution
@@ -77,7 +79,33 @@ class Route_Window():
         return
     
     def get_current_holds_in_view(self):
-        return
+        
+        current_holds = []
+        window_y_start = (self.window_center_y - self.window_height/2) #get the bottom of the window, in world coorodiantes
+        window_x_start = (self.window_center_x - self.window_width/2)
+
+        window_y_end = window_y_start + self.window_height
+        window_x_end = window_x_start + self.window_width
+
+        last_hold_added = False
+
+        for idx in range(len(self.holds)):
+            hold = self.holds[idx]
+            if hold.x >= window_x_start and hold.x <= window_x_end and hold.y >= window_y_start:
+                if hold.y <= window_y_end:
+                    current_holds.append(hold)
+                    last_hold_added = True
+                else:
+                    last_hold_added = False
+                    self.last_hold_added = idx - 1
+                    break
+        
+        if last_hold_added:
+            self.last_hold_added = len(self.holds) - 1
+
+        return current_holds
+                    
+
         
 
 

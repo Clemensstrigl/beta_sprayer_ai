@@ -1,0 +1,7 @@
+numpy
+nltk
+gensim
+networkx
+matplotlib
+pandas
+scikit-learn

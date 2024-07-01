@@ -17,10 +17,19 @@ class Latter(Route_Window):
         self.hold_width = hold_width 
         self.max_random_x_offset = max_random_x_offset #0 up to this offset can be chosen
         self.max_random_y_offset = max_random_y_offset #0 up to this offset can be chosen
-
+        self.holds = self.generate_holds(0)
         self.cell = Cell(0,wall_roll, wall_pitch)
-        super.__init__(window_height, window_width, window_resolution, x_padding, y_padding, max_height, max_width, window_center_x_start, window_center_y_start)
+        super.__init__(self.holds,window_height, window_width, window_resolution, x_padding, y_padding, max_height, max_width, window_center_x_start, window_center_y_start)
     
+    
+    def init_window(self):
+        self.window = self.wall_2_window()
+        self.current_holds_in_view = self.get_current_holds_in_view()
+        self.window = self.overlay_holds(self.current_holds_in_view)
+
+    def generate_holds(self):
+
+        return
 
     def wall_2_window(self):
 
@@ -30,13 +39,11 @@ class Latter(Route_Window):
 
         return
     
-    def get_current_holds_in_view(self):
+    def generate_holds(self, y_start):
 
         current_holds = []
-        window_y_start = (self.window_center_y - self.window_height/2) #get the bottom of the window, in world coorodiantes
-        window_y_start = window_y_start + (self.hold_dist_y - (window_y_start % self.hold_dist_y)) #add to the start the offset to the next lication of a hold
-
-        for y in range(window_y_start, window_y_start + self.window_height, self.hold_height):
+       
+        for y in range(y_start, y_start +1000, self.hold_dist_y):
             curr_x_offset = self.hold_dist_x * 2 *random.random() + self.max_random_x_offset * random.random()
             curr_y_offset = self.max_random_y_offset * random.random()
 
@@ -44,19 +51,7 @@ class Latter(Route_Window):
                 
                 current_holds.append(Hold(self.hold_type, self.window_center_x-curr_x_offset, ))
                 curr_x_offset = self.hold_dist_x * 2 *random.random() + self.max_random_x_offset * random.random()
-
-
-
-
-
                 
-        
-
 
         return
         
-    def fill_missing_hold_sections(self, x_off_set=0, y_off_set=0):
-        return
-    
-    def fill_missing_wall_sections(self,x_off_set=0, y_off_set=0):
-        return 
