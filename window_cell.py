@@ -35,7 +35,7 @@ class Cell:
     
 class Hold():
     
-    def __init__(self,x,y,radius, grip_loc, quality, type, matchable, pitch_of_wall):
+    def __init__(self,x,y,radius, grip_loc, quality, type, matchable, pitch_of_wall, allow_under_clings):
         assert(grip_loc != [])
         assert(quality >= 0  and quality <=1)
         assert(type >= 0 and type <= 4) 
@@ -52,6 +52,7 @@ class Hold():
         self.radius = radius
         self.matchable = matchable
         self.pitch = pitch_of_wall
+        self.allow_under_clings = allow_under_clings
 
     
     def populate_cell(self, x1,y1,x2,y2):
@@ -133,7 +134,7 @@ class Hold():
         if angle_degrees < 0:
             angle_degrees += 180
 
-        if quadrant == 3 or quadrant == 4:
+        if self.allow_under_clings and (quadrant == 3 or quadrant == 4):
             angle_degrees -= 180
         
         return angle_degrees
