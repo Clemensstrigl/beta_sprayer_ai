@@ -5,7 +5,9 @@ WALL_VOLUME = 0
 JUGS_HORN = 1
 CRIMPS = 2
 SLOPERS = 3
-PINCHES = 4
+FOOTCHIPS = 4
+PINCHES = 5
+POCKETS = 6
 
 
 # Sandpaper (120) = Static Friction Coefficient = 1.152
@@ -14,8 +16,8 @@ PINCHES = 4
 
 class Cell:
 
-    def __init__(self, id,roll, pitch, quality=1, matchable=True, percentage=0):
-        self.id = id #0= Wall/Volume, 1 = Jugs/Horns, 2 = crimps/pockets/footchips, 3 = slopers, 4 = pinckes, 
+    def __init__(self, type,roll, pitch, quality=1, matchable=True, percentage=0):
+        self.type = type #0= Wall/Volume, 1 = Jugs/Horns, 2 = crimps, 3 = slopers, 4 = footchips, 5 = pinches, 6 = pockets
         self.roll = roll 
         self.pitch = pitch
         self.quality = quality #potential friction score to more specify how good something is
@@ -25,7 +27,7 @@ class Cell:
 
 
     def to_list(self):
-        return [self.id, self.roll, self.pitch, self.quality, self.matchable]
+        return [self.type, self.roll, self.pitch, self.quality, self.matchable]
 
 
 
@@ -33,8 +35,7 @@ class Cell:
     
 class Hold():
     
-    def __init__(self, id,x,y,radius, grip_loc, quality, type, matchable, pitch_of_wall):
-        assert(id >= 0)
+    def __init__(self,x,y,radius, grip_loc, quality, type, matchable, pitch_of_wall):
         assert(grip_loc != [])
         assert(quality >= 0  and quality <=1)
         assert(type >= 0 and type <= 4) 
@@ -42,15 +43,16 @@ class Hold():
 
     
 
-        self.id = id
+        
         self.grip_loc = grip_loc
         self.quality = quality
-        self.type = type #0= Wall/Volume, 1 = Jugs/Horns, 2 = crimps/pockets/footchips, 3 = slopers, 4 = pinckes, 
+        self.type = type #0= Wall/Volume, 1 = Jugs/Horns, 2 = crimps, 3 = slopers, 4 = footchips, 5 = pinches, 6 = pockets
         self.x = x
         self.y = y
         self.radius = radius
         self.matchable = matchable
         self.pitch = pitch_of_wall
+
     
     def populate_cell(self, x1,y1,x2,y2):
         assert(x1 >= 0 and x2 >= 0 and y1 >= 0 and y2 >=0)
@@ -60,6 +62,9 @@ class Hold():
         grip_in_cell = False
         max_percentage = 0  
         max_percentage_slope = 0
+        grip_quadrant = 1
+        max_percentage_angle = 0
+
         for [g_x1,g_y1,g_x2,g_y2] in self.grip_loc:
             intersection_x1 = max(x1, g_x1)
             intersection_y1 = max(y1, g_y1)
@@ -74,14 +79,38 @@ class Hold():
 
                 if percentage_inside > max_percentage:
                     max_percentage = percentage_inside
+
+                    grip_center_x = g_x1 + (g_x2 - g_x1)/2
+                    grip_center_y = g_y1 + (g_y2 - g_y1)/2
+
+                    grip_quadrant = self.get_grip_quadrant(grip_center_x,grip_in_cell, self.x,self.y)
+
+
                     max_percentage_slope = (g_y2-g_y1) / (g_x2 - g_x1)
+                    max_percentage_angle = self.slope_to_angle(max_percentage_slope)
                     grip_in_cell = True
 
         if grip_in_cell:
-            return grip_in_cell, Cell(self.type, self.slope_to_angle(max_percentage_slope), self.pitch, self.quality, self.matchable, max_percentage)
+            return grip_in_cell, Cell(self.type,max_percentage_angle , self.pitch, self.quality, self.matchable, max_percentage)
             
 
         return grip_in_cell, None
+
+    def get_grip_quadrant(self, grip_x, grip_y, hold_x, hold_y):
+
+        if self.type == 6
+
+        quadrant = 1
+        if grip_x < hold_x:
+            if grip_y < hold_y:
+                quadrant = 3
+            else:
+                quadrant = 2
+        else:
+            if grip_y < hold_y:
+                quadrant = 4
+
+        return quadrant
 
     def slope_to_angle(self, slope):
         """

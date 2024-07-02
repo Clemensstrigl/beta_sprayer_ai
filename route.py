@@ -36,6 +36,7 @@ class Route_Window():
         self.current_holds_in_view = []
         self.left_or_right = True #False = Left, True = Right
         self.up_or_down = True #False = down, True = up
+        self.first_in_view_hold_index = -1
 
         window_row = [ None for _ in range(self.window_width/self.window_resolution)]
         self.window = [window_row for _ in range(self.window_height/self.window_resolution)]
@@ -45,39 +46,47 @@ class Route_Window():
         self.current_holds_in_view = self.get_current_holds_in_view()
         self.window = self.overlay_holds(self.current_holds_in_view)
 
-            
+    #after initing the window will only wall Cell objects, we will now over lay all holds found to be inside the window area
+    #      
     def overlay_holds(self, holds):
 
+        #window start in world coordiantes
         wall_x_start = (self.window_center_x - self.window_width/2)
         wall_y_start = (self.window_center_y - self.window_height/2)
 
         for hold in holds:
-
+            
+            #get the area that the holds would populate
             cell_col_start_id = int(math.log((hold.x - hold.radius - wall_x_start), self.window_resolution))
             cell_row_start_id = int(math.log((hold.y - hold.radius - wall_y_start), self.window_resolution))
             cell_col_end_id = int(math.log((hold.x + hold.radius - wall_x_start), self.window_resolution))
             cell_row_end_id = int(math.log((hold.y + hold.radius - wall_y_start), self.window_resolution))
-
+            #have to add 1 to ensure that we are getting atleast the singular cell where the full hold is contained within
             for row in range(cell_row_start_id, (cell_row_end_id+1)):
                 for col in range(cell_col_start_id, (cell_col_end_id +1)):
 
+                    #get world coordiantes of window
                     cell_x1 = col * self.window_resolution + wall_x_start
                     cell_x2 = cell_x1 + self.window_resolution
                     
                     cell_y1 = row * self.window_resolution + wall_y_start
                     cell_y2 = cell_y1 + self.window_resolution
 
+                    #get the location and angle of 
                     ret, cell = hold.populate_cell(cell_x1,cell_y1, cell_x2, cell_y2)
+                    #if a greater percentage of the grip is held within the cell, populate the cell with that the new cell calulated
                     if ret and self.window[row,col].percentage > cell.percentage:
                         self.window[row, col] = cell
             
         return
 
     
-
+    #to be implemented by children of Route_window. 
+    # based on the wall config we will want to populate the base wall window differently.
     def wall_2_window(self):
         return
-    
+
+    #loop through list of
     def get_current_holds_in_view(self):
         
         current_holds = []
@@ -88,11 +97,14 @@ class Route_Window():
         window_x_end = window_x_start + self.window_width
 
         last_hold_added = False
+        
 
         for idx in range(len(self.holds)):
             hold = self.holds[idx]
             if hold.x >= window_x_start and hold.x <= window_x_end and hold.y >= window_y_start:
                 if hold.y <= window_y_end:
+                    if len(current_holds) == 0:
+                        self.first_in_view_hold_index == idx
                     current_holds.append(hold)
                     last_hold_added = True
                 else:
