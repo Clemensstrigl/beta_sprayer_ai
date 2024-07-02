@@ -98,7 +98,9 @@ class Hold():
 
     def get_grip_quadrant(self, grip_x, grip_y, hold_x, hold_y):
 
-        if self.type == 6
+        if self.type == 6:
+            return 1
+        
 
         quadrant = 1
         if grip_x < hold_x:
@@ -112,7 +114,7 @@ class Hold():
 
         return quadrant
 
-    def slope_to_angle(self, slope):
+    def slope_to_angle(self, slope, quadrant):
         """
         Converts a given slope to an angle on the unit circle in degrees.
         
@@ -128,9 +130,11 @@ class Hold():
         # Convert radians to degrees
         angle_degrees = math.degrees(angle_radians)
         
-        # Normalize the angle to be between 0 and 360 degrees
         if angle_degrees < 0:
-            angle_degrees += 360
+            angle_degrees += 180
+
+        if quadrant == 3 or quadrant == 4:
+            angle_degrees -= 180
         
         return angle_degrees
 
