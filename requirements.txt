@@ -5,3 +5,5 @@ networkx
 matplotlib
 pandas
 scikit-learn
+python-dotenv
+tkinter

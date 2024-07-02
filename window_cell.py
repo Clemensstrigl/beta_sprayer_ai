@@ -18,11 +18,11 @@ class Cell:
 
     def __init__(self, type,roll, pitch, quality=1, matchable=True, percentage=0):
         self.type = type #0= Wall/Volume, 1 = Jugs/Horns, 2 = crimps, 3 = slopers, 4 = footchips, 5 = pinches, 6 = pockets
-        self.roll = roll 
-        self.pitch = pitch
-        self.quality = quality #potential friction score to more specify how good something is
+        self.roll = roll #degree of roll of the hold, between -180 and 180
+        self.pitch = pitch #pitch of the wall on which the hold is on 0 - 360
+        self.quality = quality #potential friction score to more specify how good a hold is is
         self.matchable = matchable #can more than one hand fit on the hold (based on size of actual hold)
-        self.percentage = percentage
+        self.percentage = percentage #the cell coverage percentage of the object within the cell
     
 
 

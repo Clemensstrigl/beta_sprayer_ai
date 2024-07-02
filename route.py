@@ -1,6 +1,7 @@
 from window_cell import *
 import math, random
-
+import tkinter as tk
+from tkinter import ttk
 
 class Route_Window():
 
@@ -40,6 +41,8 @@ class Route_Window():
 
         window_row = [ None for _ in range(self.window_width/self.window_resolution)]
         self.window = [window_row for _ in range(self.window_height/self.window_resolution)]
+
+        self.init_window()
 
     def init_window(self):
         self.window = self.wall_2_window()
@@ -162,5 +165,20 @@ class Route_Window():
                 yield from self.flatten(sub)
         else:
             yield something
-            
+    
+    def visualize(self):
+        # Create Tkinter window
+        window = tk.Tk()
+        window.title("Window Visualization")
+        # Create a frame for the grid
+        grid_frame = ttk.Frame(window)
+        grid_frame.pack(padx=10, pady=10)
+        # Create labels for each cell
+        out_grid = self.get_window_flattened()
+        for row in range(len(out_grid)):
+            for col in range(len(out_grid[row])):
+                cell = out_grid[row][col]
+                label = tk.Label(grid_frame, text=str(cell[0]), relief="solid", width=10, height=2)
+                label.grid(row=row, column=col, padx=2, pady=2)
+        window.mainloop()
       

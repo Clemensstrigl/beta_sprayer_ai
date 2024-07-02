@@ -3,6 +3,7 @@ import math
 import random
 from window_cell import *
 import numpy as np
+from utils import *
 
 
 class Latter(Route_Window):
@@ -22,7 +23,7 @@ class Latter(Route_Window):
         self.max_angle_change = max_angle_change
         self.holds = self.generate_holds(0)
         self.wall_pitch = wall_pitch
-        self.cell = Cell(0,wall_roll, wall_pitch)
+        self.cell = Cell(WALL_VOLUME,wall_roll, wall_pitch)
         super.__init__(self.holds,window_height, window_width, window_resolution, x_padding, y_padding, max_height, max_width, window_center_x_start, window_center_y_start)
     
     
@@ -56,10 +57,10 @@ class Latter(Route_Window):
         if random.random() <= 0.5:
             left_right = True
        
-        for y in range(y_start, y_start +1000, self.hold_dist_y):
+        for y in float_range(y_start, y_start +1000, self.hold_dist_y):
             curr_y_offset = self.max_random_y_offset * random.random()
 
-            current_holds += self.add_holds(self, y, curr_y_offset, left_right)
+            current_holds += self.add_holds( y, curr_y_offset, left_right)
 
             if random.random() <= self.prob_hold_on_same_side:
                 continue
