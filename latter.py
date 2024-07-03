@@ -4,12 +4,14 @@ import random
 from window_cell import *
 import numpy as np
 from utils import *
+import json
 
 
 class Latter(Route_Window):
 
     def __init__(self,hold_type, hold_dist_x, hold_dist_y,hold_radius,max_random_x_offset, max_random_y_offset,symetric,prob_hold_on_same_side,prob_hold_change_angle,max_angle_change, wall_roll, wall_pitch, window_height, window_width, window_resolution, x_padding, y_padding, max_height, max_width, window_center_x_start, window_center_y_start):
         
+        print(hold_type)
         self.hold_type = hold_type 
         self.hold_dist_x = hold_dist_x#distance away from center of the climb going up 
         self.hold_dist_y = hold_dist_y #distance between holds
@@ -28,9 +30,16 @@ class Latter(Route_Window):
     
     
     def init_window(self):
-        self.window = self.wall_2_window()
+        self.wall_2_window()
+
+        print(self.get_window_flattened())
         self.current_holds_in_view = self.get_current_holds_in_view()
-        self.window = self.overlay_holds(self.current_holds_in_view)
+        print([x.__str__() for x in self.current_holds_in_view])
+
+        self.overlay_holds(self.current_holds_in_view)
+
+        print(self.get_window_flattened())
+
 
         if self.last_hold_added:
             assert(self.first_in_view_hold_index != -1)
@@ -46,7 +55,7 @@ class Latter(Route_Window):
             for col in range(int(self.window_width/self.window_resolution)):
                 self.window[row][col] = self.cell
 
-        return
+       
     
     def generate_holds(self, y_start):
 
@@ -110,10 +119,12 @@ class Latter(Route_Window):
             quality = self.generate_quality_score(self.hold_type)
 
             matchable = True
+
             allow_underclings = False
 
+            hold_radius = self.hold_radius - (self.hold_radius-0.2)*random.random()
 
-            new_holds.append(Hold(hold_center_x,hold_center_y, self.hold_radius, grip_loc,quality,self.hold_type,matchable, self.wall_pitch, allow_underclings ))
+            new_holds.append(Hold(self.hold_type,hold_center_x,hold_center_y, hold_radius, grip_loc,quality,matchable, self.wall_pitch, allow_underclings ))
 
             if not self.symetric:
                 break
@@ -141,13 +152,13 @@ class Latter(Route_Window):
 
     
     def generate_grip_loc(self, x,y, hold_angle):
-        point1 = [x-self.hold_radius , y]
-        point2 = [x+self.hold_radius , y]
+        point1 = [x-self.hold_radius/2 , y]
+        point2 = [x+self.hold_radius/2 , y]
         if hold_angle != 0:
             point1 = self.rotate_point(tuple(point1), hold_angle, (x,y))
-            point2 = self.rotate_point(tuple(point2), hold_angle, (x,y))
-
-        return point1 + point2
+            point2 = self.rotate_point(tuple(point2), 360 - hold_angle, (x,y))
+        final_point_list = point1 + point2
+        return [final_point_list]
 
     def rotate_point(self,point, angle, center):
         """Rotate a point around a center by a given angle."""

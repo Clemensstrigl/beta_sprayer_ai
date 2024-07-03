@@ -65,14 +65,19 @@ class Route_Window():
             cell_col_end_id = 0
             cell_row_end_id = 0
             #get the area that the holds would populate
-            if(hold.x - hold.radius - wall_x_start > 0):
+            if(hold.x - hold.radius - wall_x_start >= 0):
                 cell_col_start_id = int((hold.x - hold.radius - wall_x_start)/ self.window_resolution)
-            if(hold.y - hold.radius - wall_y_start > 0):
+            if(hold.y - hold.radius - wall_y_start >= 0):
                 cell_row_start_id = int((hold.y - hold.radius - wall_y_start)/self.window_resolution)
-            if(hold.x + hold.radius - wall_x_start > 0):
+            if(hold.x + hold.radius - wall_x_start >= 0):
                 cell_col_end_id = int((hold.x + hold.radius - wall_x_start)/ self.window_resolution)
-            if(hold.y + hold.radius - wall_y_start > 0):
+            if(hold.y + hold.radius - wall_y_start >= 0):
                 cell_row_end_id = int((hold.y + hold.radius - wall_y_start)/self.window_resolution)
+            
+            print(f"Cell IDS: ({cell_col_start_id}, {cell_row_start_id}), ({cell_col_end_id}, {cell_row_end_id})")
+
+            
+            
             #have to add 1 to ensure that we are getting atleast the singular cell where the full hold is contained within
             for row in range(cell_row_start_id, (cell_row_end_id+1)):
                 for col in range(cell_col_start_id, (cell_col_end_id +1)):
@@ -83,6 +88,7 @@ class Route_Window():
                     
                     cell_y1 = row * self.window_resolution + wall_y_start
                     cell_y2 = cell_y1 + self.window_resolution
+                    print(f"Cell LOC: ({cell_x1}, {cell_y1}), ({cell_x2}, {cell_y2})")
 
                     #get the location and angle of 
                     ret, cell = hold.populate_cell(cell_x1,cell_y1, cell_x2, cell_y2)
@@ -96,7 +102,7 @@ class Route_Window():
     #to be implemented by children of Route_window. 
     # based on the wall config we will want to populate the base wall window differently.
     def wall_2_window(self):
-        return
+        return self.window
 
     #loop through list of holds and list all that are currently in view of the window
     def get_current_holds_in_view(self):
@@ -166,9 +172,9 @@ class Route_Window():
 
         for row in self.window:
             for cell in row:
-                final.append(cell.to_list())
+                final += cell.to_list()
         
-        return self.flatten(final)
+        return final
 
     #flatten what every comes into the function
     def flatten(self, something):
