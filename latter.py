@@ -21,10 +21,10 @@ class Latter(Route_Window):
         self.route_center_x = window_center_x_start + x_padding*3
         self.prob_hold_change_angle = prob_hold_change_angle
         self.max_angle_change = max_angle_change
-        self.holds = self.generate_holds(0)
         self.wall_pitch = wall_pitch
+        self.holds = self.generate_holds(0)
         self.cell = Cell(WALL_VOLUME,wall_roll, wall_pitch)
-        super.__init__(self.holds,window_height, window_width, window_resolution, x_padding, y_padding, max_height, max_width, window_center_x_start, window_center_y_start)
+        super().__init__(self.holds,window_height, window_width, window_resolution, x_padding, y_padding, max_height, max_width, window_center_x_start, window_center_y_start)
     
     
     def init_window(self):
@@ -42,8 +42,8 @@ class Latter(Route_Window):
 
     def wall_2_window(self):
 
-        for row in range(self.window_height/self.window_resolution):
-            for col in range(self.window_width/self.window_resolution):
+        for row in range(int(self.window_height/self.window_resolution)):
+            for col in range(int(self.window_width/self.window_resolution)):
                 self.window[row][col] = self.cell
 
         return
@@ -98,15 +98,22 @@ class Latter(Route_Window):
 
             hold_center_x = self.route_center_x + curr_x_offset
             hold_center_y =  y + curr_y_offset
+            
+            if hold_center_y < 0 :
+                hold_center_y = 0
+            if hold_center_x < 0 :
+                hold_center_x = 0
+
 
             grip_loc = self.generate_grip_loc(hold_center_x, hold_center_y, hold_angle)
 
-            quality = self.generate_quality_score()
+            quality = self.generate_quality_score(self.hold_type)
 
             matchable = True
+            allow_underclings = False
 
 
-            new_holds.append(Hold(hold_center_x,hold_center_y, self.hold_radius, grip_loc,quality,self.hold_type,matchable, self.wall_pitch ))
+            new_holds.append(Hold(hold_center_x,hold_center_y, self.hold_radius, grip_loc,quality,self.hold_type,matchable, self.wall_pitch, allow_underclings ))
 
             if not self.symetric:
                 break
@@ -115,19 +122,20 @@ class Latter(Route_Window):
         
         return new_holds
             
-    def generate_quality_score(self,):
-        if self.hold_type == 1: #Jug
+    def generate_quality_score(self,hold_type):
+        if hold_type == 1: #Jug
             return 1 - 0.15 * random.random()
-        if self.hold_type == 2: #Crimp
+        if hold_type == 2: #Crimp
             return 0.9 - 0.4*random.random()
-        if self.hold_type == 3: #Sloper
+        if hold_type == 3: #Sloper
             return 0.75 - 0.4 *random.random()
-        if self.hold_type == 4: #Footchips
+        if hold_type == 4: #Footchips
             return 0.45 - 0.35*random.random()
-        if self.hold_type == 5: #Pinches
+        if hold_type == 5: #Pinches
             return 0.85 - 0.3*random.random()
-        if self.hold_type == 6: #Pockets
+        if hold_type == 6: #Pockets
             return 0.6 - 0.25*random.random()
+        return 0
 
 
 

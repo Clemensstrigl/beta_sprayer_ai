@@ -2,6 +2,7 @@ from window_cell import *
 import math, random
 import tkinter as tk
 from tkinter import ttk
+from utils import *
 
 class Route_Window():
 
@@ -39,8 +40,8 @@ class Route_Window():
         self.up_or_down = True #False = down, True = up
         self.first_in_view_hold_index = -1
 
-        window_row = [ None for _ in range(self.window_width/self.window_resolution)]
-        self.window = [window_row for _ in range(self.window_height/self.window_resolution)]
+        window_row = [ None for _ in range(int(self.window_width/self.window_resolution))]
+        self.window = [window_row for _ in range(int(self.window_height/self.window_resolution))]
 
         self.init_window()
 
@@ -59,11 +60,19 @@ class Route_Window():
 
         for hold in holds:
             
+            cell_col_start_id = 0
+            cell_row_start_id = 0
+            cell_col_end_id = 0
+            cell_row_end_id = 0
             #get the area that the holds would populate
-            cell_col_start_id = int(math.log((hold.x - hold.radius - wall_x_start), self.window_resolution))
-            cell_row_start_id = int(math.log((hold.y - hold.radius - wall_y_start), self.window_resolution))
-            cell_col_end_id = int(math.log((hold.x + hold.radius - wall_x_start), self.window_resolution))
-            cell_row_end_id = int(math.log((hold.y + hold.radius - wall_y_start), self.window_resolution))
+            if(hold.x - hold.radius - wall_x_start > 0):
+                cell_col_start_id = int((hold.x - hold.radius - wall_x_start)/ self.window_resolution)
+            if(hold.y - hold.radius - wall_y_start > 0):
+                cell_row_start_id = int((hold.y - hold.radius - wall_y_start)/self.window_resolution)
+            if(hold.x + hold.radius - wall_x_start > 0):
+                cell_col_end_id = int((hold.x + hold.radius - wall_x_start)/ self.window_resolution)
+            if(hold.y + hold.radius - wall_y_start > 0):
+                cell_row_end_id = int((hold.y + hold.radius - wall_y_start)/self.window_resolution)
             #have to add 1 to ensure that we are getting atleast the singular cell where the full hold is contained within
             for row in range(cell_row_start_id, (cell_row_end_id+1)):
                 for col in range(cell_col_start_id, (cell_col_end_id +1)):
@@ -89,7 +98,7 @@ class Route_Window():
     def wall_2_window(self):
         return
 
-    #loop through list of
+    #loop through list of holds and list all that are currently in view of the window
     def get_current_holds_in_view(self):
         
         current_holds = []
@@ -123,7 +132,9 @@ class Route_Window():
 
         
 
-
+    #offset center of window and reinit the window
+    #potential future upgrade: move all cells by off set and then simply fill in any missing holds and wall bit. 
+    #I kept it like this to minimzie code and code errors
     def update_window(self, x_off_set, y_off_set):
 
         if x_off_set >= 0:  
@@ -149,7 +160,7 @@ class Route_Window():
         return self.window
 
     
-    
+    #flatten and return window in sinlge array of all values
     def get_window_flattened(self):
         final = []
 
@@ -159,6 +170,7 @@ class Route_Window():
         
         return self.flatten(final)
 
+    #flatten what every comes into the function
     def flatten(self, something):
         if isinstance(something, (list, tuple, set, range)):
             for sub in something:
@@ -166,6 +178,7 @@ class Route_Window():
         else:
             yield something
     
+    #visualize the window on a window
     def visualize(self):
         # Create Tkinter window
         window = tk.Tk()

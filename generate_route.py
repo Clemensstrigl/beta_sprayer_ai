@@ -7,7 +7,7 @@ from numpy import arange
 from typing import List
 import time
 
-from route import Route_Window
+from latter import Latter
 
 
         #for number of groups == 4
@@ -16,7 +16,7 @@ from route import Route_Window
         #v2 = 0.35 - 0.65
 
 
-class GeneratedRoute(Route_Window):
+class GeneratedRoute(Latter):
 
 
     def __init__():

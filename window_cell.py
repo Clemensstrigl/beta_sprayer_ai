@@ -38,8 +38,7 @@ class Hold():
     def __init__(self,x,y,radius, grip_loc, quality, type, matchable, pitch_of_wall, allow_under_clings):
         assert(grip_loc != [])
         assert(quality >= 0  and quality <=1)
-        assert(type >= 0 and type <= 4) 
-        assert(x >= 0 and y >= 0 and radius >= 0)
+        assert(x >= 0 and y >= 0 and radius > 0)
 
     
 
