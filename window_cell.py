@@ -28,7 +28,7 @@ class Cell:
         """
         Returns a list representation of the object .
         """
-        return [self.type, self.roll,self.pitch,   self.quality,  self.matchable,self.percentage]  
+        return [self.type, self.roll, self.pitch,   self.quality,  self.matchable, self.percentage]  
 
     def to_json(self):
         """
@@ -107,8 +107,10 @@ class Hold():
             g_x2 = loc[2]
             g_y2 = loc[3]
             intersect, area, percentage = self.do_line_rectangle_intersect(x1, y1, x2, y2,
-                                                     g_x1, g_y1, g_x2, g_y2)
-
+                                                   g_x1, g_y1, g_x2, g_y2)
+            print("area & percentage")
+            print(area)
+            print(percentage)
             if intersect:
                 print("Intersection")
 
@@ -181,12 +183,18 @@ class Hold():
             intersection_point = self.calculate_line_intersection(line_start_x, line_start_y, line_end_x, line_end_y,
                                                             side_start[0], side_start[1], side_end[0], side_end[1])
             if intersection_point:
+                print("Intesections Point")
                 intersection_points.append(intersection_point)
+            else:
+                print("no Intersections point")
         # Calculate the length of intersection and percentage of coverage
         intersection_length = 0
+        
         if intersection_points:
+            print(intersection_points)
             intersection_length = self.calculate_distance(intersection_points[0][0], intersection_points[0][1],
                                                     intersection_points[-1][0], intersection_points[-1][1])
+            print(f'interesction length: {intersection_length} and window_res: ')
             rect_area = (rect_corner2_x - rect_corner1_x) * (rect_corner2_y - rect_corner1_y)
             percentage_covered = (intersection_length / rect_area) * 100
         return bool(intersection_points), intersection_length, percentage_covered
@@ -225,8 +233,7 @@ class Hold():
             return None  # Lines are parallel or coincide
         # Calculate intersection point
         if slope1 == float('inf'):
-            x = line1_start_x
-            y = slope2 * x + y_intercept2
+           return None
         elif slope2 == float('inf'):
             x = line2_start_x
             y = slope1 * x + y_intercept1
@@ -234,6 +241,8 @@ class Hold():
             x = (y_intercept2 - y_intercept1) / (slope1 - slope2)
             y = slope1 * x + y_intercept1
         return (x, y)
+    
+    
     def calculate_distance(self,x1, y1, x2, y2):
         """
         Calculates the distance between two points.
@@ -244,8 +253,18 @@ class Hold():
             y2: y-coordinate of the second point.
         Returns:
             The distance between the two points.
-        """
-        return math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
+        """ 
+        print("final intersection coordiantes")       
+        print(x1, y1, x2, y2)
+        x_change = x2 - x1
+        y_change = y2 - y1
+        if x_change == 0:
+            x_change = 1
+        if y_change == 0:
+            y_change = 1
+        return abs((x_change) *(y_change))
+
+        #return math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
 
 
     def get_grip_quadrant(self, grip_x, grip_y, hold_x, hold_y):
@@ -272,6 +291,7 @@ class Hold():
         
         Args:
             slope (float): The slope of the line (rise over run).
+            quandrant: unit circle quadarant of wher the grip location is based on the center of the hold
         
         Returns:
             float: The angle in degrees.

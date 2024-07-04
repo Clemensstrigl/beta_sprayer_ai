@@ -8,11 +8,12 @@ class Route_Window():
 
     def __init__(self, holds, window_height, window_width, window_resolution, x_padding, y_padding, max_height, max_width, window_center_x_start, window_center_y_start):
         
+
         assert(type(holds) == list)
         assert(holds != [])
         assert(window_height > 0 and window_width > 0)
-        assert(window_height%window_resolution == 0)
-        assert(window_width%window_resolution == 0)
+        assert(int(window_height*100000)%int(window_resolution*100000) == 0)
+        assert(int(window_width*100000)% int(window_resolution*100000) == 0)
         assert(window_center_x_start >= 0 and window_center_y_start >= 0)
         assert(x_padding + window_width + window_center_x_start <= max_width)
         assert(y_padding + window_height + window_center_y_start <= max_height)
@@ -75,12 +76,19 @@ class Route_Window():
                 cell_row_end_id = int((hold.y + hold.radius - wall_y_start)/self.window_resolution)
             
             print(f"Cell IDS: ({cell_col_start_id}, {cell_row_start_id}), ({cell_col_end_id}, {cell_row_end_id})")
-
+            
             
             
             #have to add 1 to ensure that we are getting atleast the singular cell where the full hold is contained within
-            for row in range(cell_row_start_id, (cell_row_end_id+1)):
-                for col in range(cell_col_start_id, (cell_col_end_id +1)):
+            for row in range(cell_row_start_id, (cell_row_end_id)):
+                if row >= self.window_height/self.window_resolution:
+                        break
+                
+                for col in range(cell_col_start_id, (cell_col_end_id )):
+
+                    
+                    if col >= self.window_width/self.window_resolution:
+                        break
 
                     #get world coordiantes of window
                     cell_x1 = col * self.window_resolution + wall_x_start
@@ -93,8 +101,8 @@ class Route_Window():
                     #get the location and angle of 
                     ret, cell = hold.populate_cell(cell_x1,cell_y1, cell_x2, cell_y2)
                     #if a greater percentage of the grip is held within the cell, populate the cell with that the new cell calulated
-                    if ret and self.window[row,col].percentage > cell.percentage:
-                        self.window[row, col] = cell
+                    if ret and self.window[row][col].percentage < cell.percentage:
+                        self.window[row][ col] = cell
             
         return
 

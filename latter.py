@@ -37,7 +37,7 @@ class Latter(Route_Window):
         print([x.__str__() for x in self.current_holds_in_view])
 
         self.overlay_holds(self.current_holds_in_view)
-
+        print("flattened:")
         print(self.get_window_flattened())
 
 
@@ -66,7 +66,7 @@ class Latter(Route_Window):
         if random.random() <= 0.5:
             left_right = True
        
-        for y in float_range(y_start, y_start +1000, self.hold_dist_y):
+        for y in float_range(y_start, y_start + 1000, self.hold_dist_y):
             curr_y_offset = self.max_random_y_offset * random.random()
 
             current_holds += self.add_holds( y, curr_y_offset, left_right)
@@ -156,7 +156,7 @@ class Latter(Route_Window):
         point2 = [x+self.hold_radius/2 , y]
         if hold_angle != 0:
             point1 = self.rotate_point(tuple(point1), hold_angle, (x,y))
-            point2 = self.rotate_point(tuple(point2), 360 - hold_angle, (x,y))
+            point2 = self.rotate_point(tuple(point2), -hold_angle, (x,y))
         final_point_list = point1 + point2
         return [final_point_list]
 
