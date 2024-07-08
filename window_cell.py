@@ -1,5 +1,5 @@
 import math
-
+import os
 
 WALL_VOLUME = 0
 JUGS_HORN = 1
@@ -52,15 +52,13 @@ class Cell:
         
     
 class Hold():
+
+    _min_hold_grip_area_height = None
     
     def __init__(self, type,x,y,radius, grip_loc, quality, matchable, pitch_of_wall, allow_under_clings):
         assert(grip_loc != [])
         assert(quality >= 0  and quality <=1)
         assert(x >= 0 and y >= 0 and radius > 0)
-
-        
-    
-
         
         self.grip_loc = grip_loc
         self.quality = quality
@@ -71,6 +69,14 @@ class Hold():
         self.matchable = matchable
         self.pitch = pitch_of_wall
         self.allow_under_clings = allow_under_clings
+
+    @classmethod
+    def set_static_value(cls, value):
+        if cls._min_hold_grip_area_height is None:
+            cls._min_hold_grip_area_height = value
+        else:
+            raise ValueError("_min_hold_grip_area_height is already set and cannot be modified.")
+
 
     def to_json(self):
         """
@@ -158,8 +164,11 @@ class Hold():
             - The percentage of the rectangle's area covered by the line if they intersect, 0 otherwise.
         """
         # Calculate the coordinates of the opposite corners for the rectangle
+        
         rect_corner2_x = max(rect_corner1_x, rect_corner2_x)
         rect_corner2_y = max(rect_corner1_y, rect_corner2_y)
+        rect_length = rect_corner2_y - rect_corner1_y
+        print(rect_length)
         # Print the xy locations of the rectangle and line
         print(f"Rectangle: ({rect_corner1_x}, {rect_corner1_y}), ({rect_corner2_x}, {rect_corner2_y})")
         print(f"Line: ({line_start_x}, {line_start_y}), ({line_end_x}, {line_end_y})")
@@ -193,7 +202,7 @@ class Hold():
         if intersection_points:
             print(intersection_points)
             intersection_length = self.calculate_distance(intersection_points[0][0], intersection_points[0][1],
-                                                    intersection_points[-1][0], intersection_points[-1][1])
+                                                    intersection_points[-1][0], intersection_points[-1][1], rect_length)
             print(f'interesction length: {intersection_length} and window_res: ')
             rect_area = (rect_corner2_x - rect_corner1_x) * (rect_corner2_y - rect_corner1_y)
             percentage_covered = (intersection_length / rect_area) * 100
@@ -243,7 +252,7 @@ class Hold():
         return (x, y)
     
     
-    def calculate_distance(self,x1, y1, x2, y2):
+    def calculate_distance(self,x1, y1, x2, y2, max_width = 0):
         """
         Calculates the distance between two points.
         Args:
@@ -256,15 +265,18 @@ class Hold():
         """ 
         print("final intersection coordiantes")       
         print(x1, y1, x2, y2)
+        print("Max length: ", max_width)
         x_change = x2 - x1
         y_change = y2 - y1
+
         if x_change == 0:
-            x_change = 1
+            x_change = self._min_hold_grip_area_height
+
         if y_change == 0:
-            y_change = 1
+            y_change = self._min_hold_grip_area_height
         return abs((x_change) *(y_change))
 
-        #return math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
+        return math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
 
 
     def get_grip_quadrant(self, grip_x, grip_y, hold_x, hold_y):

@@ -9,7 +9,7 @@ import json
 
 class Latter(Route_Window):
 
-    def __init__(self,hold_type, hold_dist_x, hold_dist_y,hold_radius,max_random_x_offset, max_random_y_offset,symetric,prob_hold_on_same_side,prob_hold_change_angle,max_angle_change, wall_roll, wall_pitch, window_height, window_width, window_resolution, x_padding, y_padding, max_height, max_width, window_center_x_start, window_center_y_start):
+    def __init__(self,hold_type, hold_dist_x, hold_dist_y,hold_radius,max_random_x_offset, max_random_y_offset,symetric,prob_hold_on_same_side,prob_hold_change_angle,max_angle_change, wall_roll, wall_pitch, window_height, window_width, window_resolution, x_padding, y_padding, max_height, max_width, window_center_x_start, window_center_y_start, min_hold_grip_area_height):
         
         print(hold_type)
         self.hold_type = hold_type 
@@ -26,7 +26,7 @@ class Latter(Route_Window):
         self.wall_pitch = wall_pitch
         self.holds = self.generate_holds(0)
         self.cell = Cell(WALL_VOLUME,wall_roll, wall_pitch)
-        super().__init__(self.holds,window_height, window_width, window_resolution, x_padding, y_padding, max_height, max_width, window_center_x_start, window_center_y_start)
+        super().__init__(self.holds,window_height, window_width, window_resolution, x_padding, y_padding, max_height, max_width, window_center_x_start, window_center_y_start, min_hold_grip_area_height)
     
     
     def init_window(self):

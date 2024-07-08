@@ -1,12 +1,13 @@
 from window_cell import *
-import math, random
+import math, random, os
 import tkinter as tk
 from tkinter import ttk
 from utils import *
 
+
 class Route_Window():
 
-    def __init__(self, holds, window_height, window_width, window_resolution, x_padding, y_padding, max_height, max_width, window_center_x_start, window_center_y_start):
+    def __init__(self, holds, window_height, window_width, window_resolution, x_padding, y_padding, max_height, max_width, window_center_x_start, window_center_y_start, min_hold_grip_area_height):
         
 
         assert(type(holds) == list)
@@ -23,6 +24,7 @@ class Route_Window():
         assert(window_center_x_start - window_width/2  >= 0 )
         assert(window_center_y_start - window_height/2  >= 0)
         assert(window_resolution > 0)
+        assert(min_hold_grip_area_height != None and min_hold_grip_area_height >0)
         
 
         self.holds = holds
@@ -40,7 +42,8 @@ class Route_Window():
         self.left_or_right = True #False = Left, True = Right
         self.up_or_down = True #False = down, True = up
         self.first_in_view_hold_index = -1
-
+        self.min_hold_grip_area_height = min_hold_grip_area_height
+        Hold.set_static_value(min_hold_grip_area_height)
         window_row = [ None for _ in range(int(self.window_width/self.window_resolution))]
         self.window = [window_row for _ in range(int(self.window_height/self.window_resolution))]
 
@@ -123,14 +126,16 @@ class Route_Window():
         window_x_end = window_x_start + self.window_width
 
         last_hold_added = False
-        
+
+        self.first_in_view_hold_index = None
 
         for idx in range(len(self.holds)):
             hold = self.holds[idx]
             if hold.x >= window_x_start and hold.x <= window_x_end and hold.y >= window_y_start:
                 if hold.y <= window_y_end:
-                    if len(current_holds) == 0:
-                        self.first_in_view_hold_index == idx
+                    if not self.first_in_view_hold_index:
+                        print("First hold in view: ", idx)
+                        self.first_in_view_hold_index = idx
                     current_holds.append(hold)
                     last_hold_added = True
                 else:
@@ -194,18 +199,37 @@ class Route_Window():
     
     #visualize the window on a window
     def visualize(self):
+        out_grid = self.window
+
         # Create Tkinter window
         window = tk.Tk()
+        window.geometry("1000x1000")
         window.title("Window Visualization")
         # Create a frame for the grid
         grid_frame = ttk.Frame(window)
         grid_frame.pack(padx=10, pady=10)
+        width = int(1/len(out_grid[0]))
+        height = int(1/len(out_grid))
+
+        window.bind("<Up>", self.on_key_press)
+        window.bind("<Down>", self.on_key_press)
+
         # Create labels for each cell
-        out_grid = self.get_window_flattened()
         for row in range(len(out_grid)):
             for col in range(len(out_grid[row])):
+                color = "green"
                 cell = out_grid[row][col]
-                label = tk.Label(grid_frame, text=str(cell[0]), relief="solid", width=10, height=2)
-                label.grid(row=row, column=col, padx=2, pady=2)
+                if cell.type != 0:
+                    color = "red"
+                label = tk.Label(grid_frame, text=str(cell.type), relief="solid", width=width, height=height, bg=color)
+                label.grid(row=col, column=row, padx=2, pady=2)
         window.mainloop()
-      
+    
+    def on_key_press(self, event):
+        """Handle the up and down key presses to modify and redraw the grid."""
+        if event.keysym == "Up":
+            self.update_window("up")
+        elif event.keysym == "Down":
+            self.update_window("down")
+        for widget in self.grid_frame.winfo_children():
+            widget.destroy()

@@ -26,7 +26,8 @@ def main():
         max_height=float(os.getenv("MAX_HEIGHT")),
         max_width=float(os.getenv("MAX_WIDTH")),
         window_center_x_start=float(os.getenv("WINDOW_CENTER_X_START")),
-        window_center_y_start=float(os.getenv("WINDOW_CENTER_Y_START"))
+        window_center_y_start=float(os.getenv("WINDOW_CENTER_Y_START")),
+        min_hold_grip_area_height=float(os.getenv("MIN_HOLD_GRIP_AREA_HEIGHT"))
     )
 
     latter_climb.visualize()
