@@ -24,7 +24,7 @@ class Latter(Route_Window):
         self.prob_hold_change_angle = prob_hold_change_angle
         self.max_angle_change = max_angle_change
         self.wall_pitch = wall_pitch
-        self.holds = self.generate_holds(0)
+        self.holds = self.generate_holds(window_resolution)
         self.cell = Cell(WALL_VOLUME,wall_roll, wall_pitch)
         super().__init__(self.holds,window_height, window_width, window_resolution, x_padding, y_padding, max_height, max_width, window_center_x_start, window_center_y_start, min_hold_grip_area_height)
     
@@ -32,18 +32,19 @@ class Latter(Route_Window):
     def init_window(self):
         self.wall_2_window()
 
-        print(self.get_window_flattened())
+        #print(self.get_window_flattened())
         self.current_holds_in_view = self.get_current_holds_in_view()
-        print([x.__str__() for x in self.current_holds_in_view])
+       # print([x.__str__() for x in self.current_holds_in_view])
 
         self.overlay_holds(self.current_holds_in_view)
-        print("flattened:")
-        print(self.get_window_flattened())
+       # print("flattened:")
+        #print(self.get_window_flattened())
 
 
         if self.last_hold_added:
             assert(self.first_in_view_hold_index != -1)
-            holds_in_view = self.holds[self.first_in_view_hold_index:]
+            print("adding new holds")
+            holds_in_view = self.holds#[self.first_in_view_hold_index:]
             self.holds = self.generate_holds(self.window_center_y + self.window_height/2)
             self.holds = holds_in_view + self.holds
             self.last_hold_added = False
@@ -65,22 +66,16 @@ class Latter(Route_Window):
 
         if random.random() <= 0.5:
             left_right = True
-       
+      
         for y in float_range(y_start, y_start + 1000, self.hold_dist_y):
             curr_y_offset = self.max_random_y_offset * random.random()
 
             current_holds += self.add_holds( y, curr_y_offset, left_right)
 
-            if random.random() <= self.prob_hold_on_same_side:
-                continue
+            if random.random() > self.prob_hold_on_same_side:
+                left_right = not left_right
             
-            left_right = not left_right
-
-
-
-               
-                
-
+            
         return current_holds
     
     def add_holds(self, y, curr_y_offset, left_right):
@@ -151,7 +146,7 @@ class Latter(Route_Window):
 
 
     
-    def generate_grip_loc(self, x,y, hold_angle):
+    def generate_grip_loc(self, x,y, hold_angle=0):
         point1 = [x-self.hold_radius/2 , y]
         point2 = [x+self.hold_radius/2 , y]
         if hold_angle != 0:

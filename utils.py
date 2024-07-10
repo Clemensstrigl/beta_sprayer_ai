@@ -1,3 +1,5 @@
+import numpy as np
+
 def float_range(start, stop, step):
   """
   Generates a range of floats between `start` and `stop` (exclusive) with a given step size.
@@ -8,6 +10,7 @@ def float_range(start, stop, step):
   Yields:
     Floats in the specified range.
   """
-  while start < stop:
-    yield start
-    start += step
+  # while start < stop:
+  #   yield start
+  #   start += step
+  return np.arange(start,stop,step)

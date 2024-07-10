@@ -97,9 +97,8 @@ class Hold():
 
     
     def populate_cell(self, x1,y1,x2,y2):
-        assert(x1 >= 0 and x2 >= 0 and y1 >= 0 and y2 >=0)
-        assert(x2 > x1)
-        assert(y2 > y1)
+        #assert(x1 >= 0 and x2 >= 0 and y1 >= 0 and y2 >=0)
+        
         
         grip_in_cell = False
         max_percentage = 0  
@@ -114,35 +113,43 @@ class Hold():
             g_y2 = loc[3]
             intersect, area, percentage = self.do_line_rectangle_intersect(x1, y1, x2, y2,
                                                    g_x1, g_y1, g_x2, g_y2)
-            print("area & percentage")
-            print(area)
-            print(percentage)
+            #print("area & percentage")
+            #print(area)
+            #print(percentage)
             if intersect:
-                print("Intersection")
+                #print("Intersection")
 
                 if percentage > max_percentage:
-                    print(f"current percentage: {percentage}")
+                    #print(f"current percentage: {percentage}")
                     max_percentage = percentage
 
                     grip_center_x = g_x1 + (g_x2 - g_x1)/2
                     grip_center_y = g_y1 + (g_y2 - g_y1)/2
 
                     grip_quadrant = self.get_grip_quadrant(grip_center_x,grip_center_y, self.x,self.y)
-                    print(f"quadrant: ${grip_quadrant}")
+                    #print(f"quadrant: ${grip_quadrant}")
 
                     max_percentage_slope = (g_y2-g_y1) / (g_x2 - g_x1)
                     max_percentage_angle = self.slope_to_angle(max_percentage_slope, grip_quadrant)
                     grip_in_cell = True
-                else:
-                    print(f"current percentage: {percentage}")
-            else: 
-                print("no Intersection")
+                # else:
+                #     print(f"current percentage: {percentage}")
+            # else: 
+            #     print("no Intersection")
 
         if grip_in_cell:
-            return grip_in_cell, Cell(self.type,max_percentage_angle , self.pitch, self.quality, self.matchable, max_percentage)
+            return grip_in_cell, Cell(
+                                    self.type,
+                                    max_percentage_angle, 
+                                    self.pitch, 
+                                    self.quality, 
+                                    self.matchable, 
+                                    max_percentage
+                                    )
             
-
         return grip_in_cell, None
+    
+
     def do_line_rectangle_intersect(self,rect_corner1_x, rect_corner1_y, rect_corner2_x, rect_corner2_y,
                                 line_start_x, line_start_y, line_end_x, line_end_y):
         """
@@ -168,10 +175,10 @@ class Hold():
         rect_corner2_x = max(rect_corner1_x, rect_corner2_x)
         rect_corner2_y = max(rect_corner1_y, rect_corner2_y)
         rect_length = rect_corner2_y - rect_corner1_y
-        print(rect_length)
+       # print(rect_length)
         # Print the xy locations of the rectangle and line
-        print(f"Rectangle: ({rect_corner1_x}, {rect_corner1_y}), ({rect_corner2_x}, {rect_corner2_y})")
-        print(f"Line: ({line_start_x}, {line_start_y}), ({line_end_x}, {line_end_y})")
+        #print(f"Rectangle: ({rect_corner1_x}, {rect_corner1_y}), ({rect_corner2_x}, {rect_corner2_y})")
+        #print(f"Line: ({line_start_x}, {line_start_y}), ({line_end_x}, {line_end_y})")
         # Calculate the line's slope and y-intercept
         if line_end_x - line_start_x != 0:
             slope = (line_end_y - line_start_y) / (line_end_x - line_start_x)
@@ -192,18 +199,18 @@ class Hold():
             intersection_point = self.calculate_line_intersection(line_start_x, line_start_y, line_end_x, line_end_y,
                                                             side_start[0], side_start[1], side_end[0], side_end[1])
             if intersection_point:
-                print("Intesections Point")
+               # print("Intesections Point")
                 intersection_points.append(intersection_point)
-            else:
-                print("no Intersections point")
+           # else:
+                #print("no Intersections point")
         # Calculate the length of intersection and percentage of coverage
         intersection_length = 0
         
         if intersection_points:
-            print(intersection_points)
+            #print(intersection_points)
             intersection_length = self.calculate_distance(intersection_points[0][0], intersection_points[0][1],
                                                     intersection_points[-1][0], intersection_points[-1][1], rect_length)
-            print(f'interesction length: {intersection_length} and window_res: ')
+            #print(f'interesction length: {intersection_length} and window_res: ')
             rect_area = (rect_corner2_x - rect_corner1_x) * (rect_corner2_y - rect_corner1_y)
             percentage_covered = (intersection_length / rect_area) * 100
         return bool(intersection_points), intersection_length, percentage_covered
@@ -263,9 +270,9 @@ class Hold():
         Returns:
             The distance between the two points.
         """ 
-        print("final intersection coordiantes")       
-        print(x1, y1, x2, y2)
-        print("Max length: ", max_width)
+        # print("final intersection coordiantes")       
+        # print(x1, y1, x2, y2)
+        # print("Max length: ", max_width)
         x_change = x2 - x1
         y_change = y2 - y1
 

@@ -37,7 +37,7 @@ class Route_Window():
         self.max_width = max_width
         self.window_center_x= window_center_x_start
         self.window_center_y = window_center_y_start
-        self.last_hold_added = 0
+        self.last_hold_added = False
         self.current_holds_in_view = []
         self.left_or_right = True #False = Left, True = Right
         self.up_or_down = True #False = down, True = up
@@ -49,10 +49,16 @@ class Route_Window():
 
         self.init_window()
 
+
+        # Create Tkinter window
+        self.root = tk.Tk()
+        self.root.geometry("500x500")
+        self.root.title("Window Visualization")
+
     def init_window(self):
         self.window = self.wall_2_window()
         self.current_holds_in_view = self.get_current_holds_in_view()
-        self.window = self.overlay_holds(self.current_holds_in_view)
+        self.overlay_holds(self.current_holds_in_view)
 
     #after initing the window will only wall Cell objects, we will now over lay all holds found to be inside the window area
     #      
@@ -66,31 +72,36 @@ class Route_Window():
             
             cell_col_start_id = 0
             cell_row_start_id = 0
-            cell_col_end_id = 0
-            cell_row_end_id = 0
+            cell_col_end_id = int(self.window_width/self.window_resolution)
+            cell_row_end_id = int(self.window_height/self.window_resolution)
+
             #get the area that the holds would populate
             if(hold.x - hold.radius - wall_x_start >= 0):
                 cell_col_start_id = int((hold.x - hold.radius - wall_x_start)/ self.window_resolution)
+
             if(hold.y - hold.radius - wall_y_start >= 0):
                 cell_row_start_id = int((hold.y - hold.radius - wall_y_start)/self.window_resolution)
-            if(hold.x + hold.radius - wall_x_start >= 0):
+
+            if(hold.x + hold.radius - wall_x_start <= self.window_width):
                 cell_col_end_id = int((hold.x + hold.radius - wall_x_start)/ self.window_resolution)
-            if(hold.y + hold.radius - wall_y_start >= 0):
+
+            if(hold.y + hold.radius - wall_y_start <= self.window_height):
                 cell_row_end_id = int((hold.y + hold.radius - wall_y_start)/self.window_resolution)
             
-            print(f"Cell IDS: ({cell_col_start_id}, {cell_row_start_id}), ({cell_col_end_id}, {cell_row_end_id})")
+            print(f"Cell IDS: ({cell_row_start_id}, {cell_col_start_id}), ({cell_row_end_id}, {cell_col_end_id})")
             
             
             
             #have to add 1 to ensure that we are getting atleast the singular cell where the full hold is contained within
-            for row in range(cell_row_start_id, (cell_row_end_id)):
-                if row >= self.window_height/self.window_resolution:
-                        break
+            for row in range(cell_row_start_id, cell_row_end_id):
+                if row > self.window_height//self.window_resolution:
+                    print("hit oustide of y window cells")
+                    break
                 
-                for col in range(cell_col_start_id, (cell_col_end_id )):
-
+                for col in range(cell_col_start_id, cell_col_end_id ):
                     
-                    if col >= self.window_width/self.window_resolution:
+                    if col > self.window_width//self.window_resolution:
+                        print("hit outside of x window cell")
                         break
 
                     #get world coordiantes of window
@@ -105,9 +116,10 @@ class Route_Window():
                     ret, cell = hold.populate_cell(cell_x1,cell_y1, cell_x2, cell_y2)
                     #if a greater percentage of the grip is held within the cell, populate the cell with that the new cell calulated
                     if ret and self.window[row][col].percentage < cell.percentage:
-                        self.window[row][ col] = cell
+                        print(f"new cell at: {row}, {col}")
+                        self.window[row][col] = cell
             
-        return
+        
 
     
     #to be implemented by children of Route_window. 
@@ -125,26 +137,24 @@ class Route_Window():
         window_y_end = window_y_start + self.window_height
         window_x_end = window_x_start + self.window_width
 
-        last_hold_added = False
-
         self.first_in_view_hold_index = None
 
         for idx in range(len(self.holds)):
             hold = self.holds[idx]
-            if hold.x >= window_x_start and hold.x <= window_x_end and hold.y >= window_y_start:
-                if hold.y <= window_y_end:
-                    if not self.first_in_view_hold_index:
+            #have to check if any part of the hold is contained inside the window, not just the center
+            if hold.x-hold.radius >= window_x_start and hold.x+hold.radius <= window_x_end and hold.y-hold.radius >= window_y_start:
+                if hold.y+hold.radius <= window_y_end:
+                    if self.first_in_view_hold_index == None:
                         print("First hold in view: ", idx)
                         self.first_in_view_hold_index = idx
                     current_holds.append(hold)
-                    last_hold_added = True
+                    print(f"{idx}/{len(self.holds)} in view")
+                    self.last_hold_added = True
                 else:
-                    last_hold_added = False
-                    self.last_hold_added = idx - 1
+                    self.last_hold_added = False
                     break
         
-        if last_hold_added:
-            self.last_hold_added = len(self.holds) - 1
+        
 
         return current_holds
                     
@@ -157,17 +167,17 @@ class Route_Window():
     def update_window(self, x_off_set, y_off_set):
 
         if x_off_set >= 0:  
-            assert( x_off_set + self.window_center_x + self.x_padding + self.window_width/2 <= self.max_width)
+            #assert( x_off_set + self.window_center_x + self.x_padding + self.window_width/2 <= self.max_width)
             self.left_or_right = True
         else:
-            assert( self.window_center_x - self.window_width/2 + self.x_padding + x_off_set >= 0)
+            #assert( self.window_center_x - self.window_width/2 + self.x_padding + x_off_set >= 0)
             self.left_or_right = False
         
         if y_off_set >= 0:
-            assert( y_off_set + self.window_center_y + self.y_padding + self.window_height/2 <= self.max_height)
+            #assert( y_off_set + self.window_center_y + self.y_padding + self.window_height/2 <= self.max_height)
             self.up_or_down = True
         else:
-            assert( self.window_center_y - self.window_height/2 + self.y_padding + y_off_set >= 0)
+            #assert( self.window_center_y - self.window_height/2 + self.y_padding + y_off_set >= 0)
             self.up_or_down = False
 
 
@@ -201,35 +211,52 @@ class Route_Window():
     def visualize(self):
         out_grid = self.window
 
-        # Create Tkinter window
-        window = tk.Tk()
-        window.geometry("1000x1000")
-        window.title("Window Visualization")
+       
         # Create a frame for the grid
-        grid_frame = ttk.Frame(window)
+        grid_frame = ttk.Frame(self.root)
         grid_frame.pack(padx=10, pady=10)
         width = int(1/len(out_grid[0]))
         height = int(1/len(out_grid))
 
-        window.bind("<Up>", self.on_key_press)
-        window.bind("<Down>", self.on_key_press)
+        self.root.bind("<Up>", self.on_key_press)
+        self.root.bind("<Down>", self.on_key_press)
+        self.root.bind("<Left>", self.on_key_press)
+        self.root.bind("<Right>", self.on_key_press)
+
+        
 
         # Create labels for each cell
         for row in range(len(out_grid)):
-            for col in range(len(out_grid[row])):
+          print()
+          for col in range(len(out_grid[row])):
+                print(self.window[row][col].type, end=", ")
                 color = "green"
                 cell = out_grid[row][col]
                 if cell.type != 0:
                     color = "red"
                 label = tk.Label(grid_frame, text=str(cell.type), relief="solid", width=width, height=height, bg=color)
-                label.grid(row=col, column=row, padx=2, pady=2)
-        window.mainloop()
+                label.grid(row=len(out_grid)-1-row, column=col, padx=2, pady=2)
+                
+        self.root.mainloop()
+
+        
     
     def on_key_press(self, event):
         """Handle the up and down key presses to modify and redraw the grid."""
+        print("key pressed")
         if event.keysym == "Up":
-            self.update_window("up")
+            print("up")
+            self.update_window(0,self.window_resolution*2)
         elif event.keysym == "Down":
-            self.update_window("down")
-        for widget in self.grid_frame.winfo_children():
+            print("down")
+            self.update_window(0,-self.window_resolution*2)
+        elif event.keysym == "Left":
+            print("left")
+            self.update_window(-self.window_resolution*2, 0)
+        elif event.keysym == "Right":
+            print("right")
+            self.update_window(self.window_resolution*2, 0)
+        for widget in self.root.winfo_children():
             widget.destroy()
+        
+        self.visualize()
