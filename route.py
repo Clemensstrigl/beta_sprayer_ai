@@ -304,7 +304,7 @@ class Route_Window():
                 if cell.type != 0:
                     color = "red"
                 label = tk.Label(grid_frame, text=str(cell.type), relief="solid", width=width, height=height, bg=color)
-                label.grid(row=row, column=col, padx=2, pady=2)
+                label.grid(row=len(out_grid)-1-row, column=col, padx=2, pady=2)
                 
         self.root.mainloop()
 
