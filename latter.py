@@ -41,13 +41,12 @@ class Latter(Route_Window):
         #print(self.get_window_flattened())
 
 
-        if self.last_hold_added:
+        if self.last_hold_added - len(self.holds) < 10:
             assert(self.first_in_view_hold_index != -1)
             print("adding new holds")
             holds_in_view = self.holds#[self.first_in_view_hold_index:]
             self.holds = self.generate_holds(self.window_center_y + self.window_height/2)
             self.holds = holds_in_view + self.holds
-            self.last_hold_added = False
 
 
     def wall_2_window(self):
