@@ -8,11 +8,13 @@ class Body():
         if bpy.context.mode != 'OBJECT':
             bpy.ops.object.mode_set(mode='OBJECT')
         self.gender = gender
-        self.heigth = height
+        self.height = height
         self.apeindex = apeindex
         self.weight = weight
         self.canDoPullup = canDoPullup
         self.canDoPistleSquat = canDoPistleSquat
+        self.body_parts = self.create_body()
+        self.skeleton = self.add_armature(self.body_parts)
 
 
     def create_pipe(self,name, radius, height, location, rotation=(0, 0, 0)):
@@ -20,37 +22,75 @@ class Body():
         pipe = bpy.context.object
         pipe.name = name
         return pipe
+    
+    def create_sphere(self,name, radius, location, rotation=(0, 0, 0)):
+        bpy.ops.mesh.primitive_ico_sphere_add(radius=radius, location=location, rotation=rotation)
+        sphere = bpy.context.object
+        sphere.name = name
+        return sphere
 
     def create_body(self,):
         body_parts = {}
         
         # Define body parts with their dimensions and locations
         body_segments = [
-            {"name": "head", "radius": 0.2, "height": 0.3, "location": (0, 0, 1.8)},
-            {"name": "neck", "radius": 0.03, "height": 0.3, "location": (0, 0, 1.8)},
-            {"name": "chest", "radius": 0.3, "height": 0.4, "location": (0, 0, 1.4)},
-            {"name": "stomach", "radius": 0.25, "height": 0.3, "location": (0, 0, 1.0)},
-            {"name": "hips", "radius": 0.35, "height": 0.3, "location": (0, 0, 0.7)},
-            {"name": "collar_L", "radius": 0.1, "height": 0.2, "location": (-0.35, 0, 1.5), "rotation": (0, 1.5708, 0)},
-            {"name": "collar_R", "radius": 0.1, "height": 0.2, "location": (0.35, 0, 1.5), "rotation": (0, 1.5708, 0)},
-            {"name": "upper_arm_L", "radius": 0.1, "height": 0.5, "location": (-0.55, 0, 1.5), "rotation": (0, 1.5708, 0)},
-            {"name": "upper_arm_R", "radius": 0.1, "height": 0.5, "location": (0.55, 0, 1.5), "rotation": (0, 1.5708, 0)},
+            {"name": "head", "radius": 0.2, "location": (0, 0, 1.8)},
+            #{"name": "neck", "radius": 0.03, "height": 0.3, "location": (0, 0, 1.8)},
+            {"name": "chest", "radius": 0.25, "location": (0, 0, 1.4)},
+            {"name": "stomach", "radius": 0.2, "location": (0, 0, 1.0)},
+            {"name": "hips", "radius": 0.12, "height": 0.45, "location": (0, 0, 0.7), "rotation": (0, 1.5708, 0)},
+            {"name": "collar_L", "radius": 0.08, "height": 0.2, "location": (-0.2, 0, 1.5), "rotation": (0, 1.5708, 0)},
+            {"name": "collar_R", "radius": 0.08, "height": 0.2, "location": (0.2, 0, 1.5), "rotation": (0, 1.5708, 0)},
+            {"name": "upper_arm_L", "radius": 0.08, "height": 0.45, "location": (-0.525, 0, 1.5), "rotation": (0, 1.5708, 0)},
+            {"name": "upper_arm_R", "radius": 0.08, "height": 0.45, "location": (0.525, 0, 1.5), "rotation": (0, 1.5708, 0)},
             {"name": "lower_arm_L", "radius": 0.08, "height": 0.4, "location": (-0.95, 0, 1.5), "rotation": (0, 1.5708, 0)},
             {"name": "lower_arm_R", "radius": 0.08, "height": 0.4, "location": (0.95, 0, 1.5), "rotation": (0, 1.5708, 0)},
-            {"name": "hand_L", "radius": 0.06, "height": 0.2, "location": (-1.15, 0, 1.5), "rotation": (0, 1.5708, 0)},
-            {"name": "hand_R", "radius": 0.06, "height": 0.2, "location": (1.15, 0, 1.5), "rotation": (0, 1.5708, 0)},
-            {"name": "upper_leg_L", "radius": 0.12, "height": 0.6, "location": (-0.2, 0, 0.4)},
-            {"name": "upper_leg_R", "radius": 0.12, "height": 0.6, "location": (0.2, 0, 0.4)},
-            {"name": "lower_leg_L", "radius": 0.1, "height": 0.5, "location": (-0.2, 0, -0.1)},
-            {"name": "lower_leg_R", "radius": 0.1, "height": 0.5, "location": (0.2, 0, -0.1)},
-            {"name": "foot_L", "radius": 0.08, "height": 0.3, "location": (-0.2, 0, -0.4)},
-            {"name": "foot_R", "radius": 0.08, "height": 0.3, "location": (0.2, 0, -0.4)},
+            {"name": "hand_L", "radius": 0.06,  "location": (-1.15, 0, 1.5), "rotation": (0, 1.5708, 0)},
+            {"name": "hand_R", "radius": 0.06,  "location": (1.15, 0, 1.5), "rotation": (0, 1.5708, 0)},
+            {"name": "upper_leg_L", "radius": 0.08, "height": 0.6, "location": (-0.2, 0, 0.4)},
+            {"name": "upper_leg_R", "radius": 0.08, "height": 0.6, "location": (0.2, 0, 0.4)},
+            {"name": "lower_leg_L", "radius": 0.08, "height": 0.5, "location": (-0.2, 0, -0.1)},
+            {"name": "lower_leg_R", "radius": 0.08, "height": 0.5, "location": (0.2, 0, -0.1)},
+            {"name": "foot_L", "radius": 0.08,  "location": (-0.2, 0, -0.4)},
+            {"name": "foot_R", "radius": 0.08,  "location": (0.2, 0, -0.4)},
         ]
+
+
+        # Define body parts with their dimensions and locations
+        body_segments = [
+            {"name": "head", "radius": 0.089*self.height/2, "location": (0, 0, self.height-0.089*self.height/2)},
+            #{"name": "neck", "radius": 0.03, "height": 0.3, "location": (0, 0, 1.8)},
+            {"name": "chest", "radius": 0.25, "location": (0, 0, 1.4)},
+            
+            {"name": "collar_L", "radius": 0.05*self.height/2, "height": 0.1*self.height, "location": (-0.1*self.height, 0,  0.793*self.height), "rotation": (0, 1.5708, 0)},
+            {"name": "collar_R", "radius": 0.05*self.height/2, "height": 0.1*self.height, "location": (0.1*self.height, 0, 0.793*self.height), "rotation": (0, 1.5708, 0)},
+            {"name": "upper_arm_L", "radius": 0.05*self.height/2, "height": 0.45, "location": (-0.525, 0, 1.5), "rotation": (0, 1.5708, 0)},
+            {"name": "upper_arm_R", "radius": 0.05*self.height/2, "height": 0.45, "location": (0.525, 0, 1.5), "rotation": (0, 1.5708, 0)},
+            {"name": "lower_arm_L", "radius": 0.05*self.height/2, "height": 0.4, "location": (-0.95, 0, 1.5), "rotation": (0, 1.5708, 0)},
+            {"name": "lower_arm_R", "radius": 0.05*self.height/2, "height": 0.4, "location": (0.95, 0, 1.5), "rotation": (0, 1.5708, 0)},
+            {"name": "hand_L", "radius": 0.06,  "location": (-1.15, 0, 1.5), "rotation": (0, 1.5708, 0)},
+            {"name": "hand_R", "radius": 0.06,  "location": (1.15, 0, 1.5), "rotation": (0, 1.5708, 0)},
+            {"name": "stomach", "radius": 0.2, "location": (0, 0, 1.0)},
+            {"name": "hips", "radius": 0.1*self.height/2, "height": 0.05*self.height+ 0.07*self.height, "location": (0, 0, 0.534 * self.height), "rotation": (0, 1.5708, 0)},
+            {"name": "upper_leg_L", "radius": 0.05*self.height/2, "height": 0.6, "location": (-0.07*self.height/2, 0, 0.289 * self.height)},
+            {"name": "upper_leg_R", "radius": 0.05*self.height/2, "height": 0.6, "location": (0.07*self.height/2, 0, 0.289 * self.height)},
+            {"name": "lower_leg_L", "radius": 0.05*self.height/2, "height": 0.5, "location": (-0.07*self.height/2, 0, 0.05*self.height)},
+            {"name": "lower_leg_R", "radius": 0.05*self.height/2, "height": 0.5, "location": (0.07*self.height/2, 0, 0.05*self.height)},
+            {"name": "foot_L", "radius": 0.05*self.height/2,  "location": (-0.07*self.height/2, 0, 0)},
+            {"name": "foot_R", "radius": 0.05*self.height/2,  "location": (0.07*self.height/2, 0, 0)},
+        ]
+
+        
+
         
         # Create pipes for each body segment
         for segment in body_segments:
             rotation = segment.get("rotation", (0, 0, 0))
-            body_parts[segment["name"]] = self.create_pipe(segment["name"], segment["radius"], segment["height"], segment["location"], rotation)
+            if "height" in segment:
+                body_parts[segment["name"]] = self.create_pipe(segment["name"], segment["radius"], segment["height"], segment["location"], rotation)
+            else:
+                body_parts[segment["name"]] = self.create_sphere(segment["name"], segment["radius"], segment["location"], rotation)
+
             
         return body_parts
         
@@ -155,11 +195,11 @@ def main():
     bpy.ops.object.select_by_type(type='MESH')
     bpy.ops.object.delete()
     
-    body_parts = create_body()
-    armature = add_armature(body_parts)
+    body = Body(False, 1.80, 5, 86, canDoPullup=True, canDoPistleSquat=True)
+    
     
     # Example usage
-    lock_hands_and_feet(body_parts)
+    #lock_hands_and_feet(body_parts)
     # Unlock hands and feet later if needed
     # unlock_hands_and_feet(body_parts)
 
