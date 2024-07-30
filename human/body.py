@@ -114,10 +114,12 @@ class Body():
 
         
     def add_armature(self, body_parts):
-        bpy.ops.object.armature_add()
+        bpy.ops.object.armature_add(enter_editmode=False)
         armature = bpy.context.object
         armature.name = 'Armature'
+        print(type(armature.data.bones))
         
+
         bpy.context.view_layer.objects.active = armature
         bpy.ops.object.mode_set(mode='EDIT')
         
@@ -126,7 +128,7 @@ class Body():
         # Define bones and their connections
         bones_data = [
             #("chest", None),
-            
+
             ("chest", "stomach"),
             ("stomach", "hips"),
             ("collar", "chest"),
@@ -136,7 +138,7 @@ class Body():
             ("collar_R", "collar"),
             ("collar", "chest"),
             ("upper_arm_L", "collar_L"),
-            ("upper_arm_R", "collar_L"),
+            ("upper_arm_R", "collar_R"),
             ("lower_arm_L", "upper_arm_L"),
             ("lower_arm_R", "upper_arm_R"),
             ("hand_L", "lower_arm_L"),
@@ -213,8 +215,12 @@ class Body():
 
             elif 'arm' in parent_name:
                 child_loc = body_parts[bone_name].location
-                parent_loc[0] = parent_loc[0] - self.get_segment_attr(parent_name, "height")/2
-                child_loc[0] = child_loc[0] - self.get_segment_attr(bone_name, "height")/2
+                if "L" in parent_name:
+                    parent_loc[0] = parent_loc[0] - self.get_segment_attr(parent_name, "height")/2
+                    child_loc[0] = child_loc[0] - self.get_segment_attr(bone_name, "height")/2
+                if "R" in parent_name:
+                    parent_loc[0] = parent_loc[0] + self.get_segment_attr(parent_name, "height")/2
+                    child_loc[0] = child_loc[0] + self.get_segment_attr(bone_name, "height")/2
 
             print(bone_name)
             bone.length = bone_length
@@ -229,16 +235,32 @@ class Body():
             
         
 
-        
-        bpy.ops.object.mode_set(mode='OBJECT')
-        
+        for b in armature.data.edit_bones:
+            print(b)
+            if "Bone" in b.name:
+                armature.data.edit_bones.remove(b)
+
+        bpy.ops.object.mode_set(mode='OBJECT') # Exit edit mode after parenting
+
+
         # Parent each body part to its corresponding bone and hide the body parts
         for bone_name, body_part in body_parts.items():
             print(bone_name, body_part.name)
-            bpy.context.view_layer.objects.active = body_part
+            body_part.select_set(True)
+            bpy.context.view_layer.objects.active = armature
+            if "hips" in bone_name:
+                bone_name = "stomach"
+            armature.data.bones.active = armature.data.bones[bone_name]
+
+            bpy.ops.object.mode_set(mode='EDIT')
+
             bpy.ops.object.parent_set(type='BONE', keep_transform=True)
+            bpy.ops.object.mode_set(mode='OBJECT') # Exit edit mode after parenting
             bpy.ops.object.hide_viewport = True  # Hide body parts
+            bpy.ops.object.select_all(action='DESELECT') #deselect all objects
+
         
+
         return armature
 
     def lock_part(self, part_name):
