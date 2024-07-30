@@ -32,53 +32,53 @@ class Body():
     def create_body(self,):
         body_parts = {}
         
-        # Define body parts with their dimensions and locations
+       
+
         body_segments = [
-            {"name": "head", "radius": 0.2, "location": (0, 0, 1.8)},
+            {"name": "head", "radius": 0.15, "location": (0, 0, 2.25)},
             #{"name": "neck", "radius": 0.03, "height": 0.3, "location": (0, 0, 1.8)},
-            {"name": "chest", "radius": 0.25, "location": (0, 0, 1.4)},
-            {"name": "stomach", "radius": 0.2, "location": (0, 0, 1.0)},
-            {"name": "hips", "radius": 0.12, "height": 0.45, "location": (0, 0, 0.7), "rotation": (0, 1.5708, 0)},
-            {"name": "collar_L", "radius": 0.08, "height": 0.2, "location": (-0.2, 0, 1.5), "rotation": (0, 1.5708, 0)},
-            {"name": "collar_R", "radius": 0.08, "height": 0.2, "location": (0.2, 0, 1.5), "rotation": (0, 1.5708, 0)},
-            {"name": "upper_arm_L", "radius": 0.08, "height": 0.45, "location": (-0.525, 0, 1.5), "rotation": (0, 1.5708, 0)},
-            {"name": "upper_arm_R", "radius": 0.08, "height": 0.45, "location": (0.525, 0, 1.5), "rotation": (0, 1.5708, 0)},
-            {"name": "lower_arm_L", "radius": 0.08, "height": 0.4, "location": (-0.95, 0, 1.5), "rotation": (0, 1.5708, 0)},
-            {"name": "lower_arm_R", "radius": 0.08, "height": 0.4, "location": (0.95, 0, 1.5), "rotation": (0, 1.5708, 0)},
-            {"name": "hand_L", "radius": 0.06,  "location": (-1.15, 0, 1.5), "rotation": (0, 1.5708, 0)},
-            {"name": "hand_R", "radius": 0.06,  "location": (1.15, 0, 1.5), "rotation": (0, 1.5708, 0)},
-            {"name": "upper_leg_L", "radius": 0.08, "height": 0.6, "location": (-0.2, 0, 0.4)},
-            {"name": "upper_leg_R", "radius": 0.08, "height": 0.6, "location": (0.2, 0, 0.4)},
-            {"name": "lower_leg_L", "radius": 0.08, "height": 0.5, "location": (-0.2, 0, -0.1)},
-            {"name": "lower_leg_R", "radius": 0.08, "height": 0.5, "location": (0.2, 0, -0.1)},
-            {"name": "foot_L", "radius": 0.08,  "location": (-0.2, 0, -0.4)},
-            {"name": "foot_R", "radius": 0.08,  "location": (0.2, 0, -0.4)},
+            {"name": "chest", "radius": 0.24, "location": (0, 0, 1.85)},
+            {"name": "stomach", "radius": 0.18, "location": (0, 0, 1.43)},
+            {"name": "hips", "radius": 0.12, "height": 0.36, "location": (0, 0, 1.13),              "rotation": (0, 1.5708, 0)},
+            {"name": "collar_L", "radius": 0.09, "height": 0.24, "location": (-0.12, 0, 1.95),      "rotation": (0, 1.5708, 0)},
+            {"name": "collar_R", "radius": 0.09, "height": 0.24, "location": (0.12, 0, 1.95),       "rotation": (0, 1.5708, 0)},
+            {"name": "upper_arm_L", "radius": 0.08, "height": 0.45, "location": (-0.465, 0, 1.95),  "rotation": (0, 1.5708, 0)},
+            {"name": "upper_arm_R", "radius": 0.08, "height": 0.45, "location": (0.465, 0, 1.95),   "rotation": (0, 1.5708, 0)},
+            {"name": "lower_arm_L", "radius": 0.07, "height": 0.4, "location": (-0.89, 0, 1.95),    "rotation": (0, 1.5708, 0)},
+            {"name": "lower_arm_R", "radius": 0.07, "height": 0.4, "location": (0.89, 0, 1.95),     "rotation": (0, 1.5708, 0)},
+            {"name": "hand_L", "radius": 0.06,  "location": (-1.13, 0, 1.95),                       "rotation": (0, 1.5708, 0)},
+            {"name": "hand_R", "radius": 0.06,  "location": (1.13, 0, 1.95),                        "rotation": (0, 1.5708, 0)},
+            {"name": "upper_leg_L", "radius": 0.08, "height": 0.5, "location": (-0.1, 0, 0.78)},
+            {"name": "upper_leg_R", "radius": 0.08, "height": 0.5, "location": (0.1, 0, 0.78)},
+            {"name": "lower_leg_L", "radius": 0.07, "height": 0.4, "location": (-0.1, 0, 0.33)},
+            {"name": "lower_leg_R", "radius": 0.07, "height": 0.4, "location": (0.1, 0, 0.33)},
+            {"name": "foot_L", "radius": 0.08,  "location": (-0.1, 0, 0.08)},
+            {"name": "foot_R", "radius": 0.08,  "location": (0.1, 0, 0.08)},
         ]
 
 
-        # Define body parts with their dimensions and locations
         body_segments = [
-            {"name": "head", "radius": 0.089*self.height/2, "location": (0, 0, self.height-0.089*self.height/2)},
+            {"name": "head", "radius": 0.0625*self.height, "location": (0, 0, 0.9375*self.height)},
             #{"name": "neck", "radius": 0.03, "height": 0.3, "location": (0, 0, 1.8)},
-            {"name": "chest", "radius": 0.106*self.height, "location": (0, 0, 0.611*self.height + 0.106*self.height)},
-            {"name": "collar_L", "radius": 0.025*self.height, "height": 0.106*self.height, "location": (-0.1*self.height, 0,  0.793*self.height), "rotation": (0, 1.5708, 0)},
-            {"name": "collar_R", "radius": 0.025*self.height, "height": 0.106*self.height, "location": (0.1*self.height, 0, 0.793*self.height), "rotation": (0, 1.5708, 0)},
-            {"name": "upper_arm_L", "radius": 0.025*self.height, "height": 0.45, "location": (-0.106*self.height, 0, 0.793*self.height), "rotation": (0, 1.5708, 0)},
-            {"name": "upper_arm_R", "radius": 0.025*self.height, "height": 0.45, "location": (0.106*self.height, 0, 0.793*self.height), "rotation": (0, 1.5708, 0)},
-            {"name": "lower_arm_L", "radius": 0.025*self.height, "height": 0.4, "location": (-0.267*self.height, 0, 0.793*self.height), "rotation": (0, 1.5708, 0)},
-            {"name": "lower_arm_R", "radius": 0.025*self.height, "height": 0.4, "location": (0.267*self.height, 0,0.793*self.height), "rotation": (0, 1.5708, 0)},
-            {"name": "hand_L", "radius": 0.025*self.height,  "location": (-0.435*self.height- 0.025*self.height, 0, 0.793*self.height), "rotation": (0, 1.5708, 0)},
-            {"name": "hand_R", "radius": 0.025*self.height,  "location": (0.435*self.height+ 0.025*self.height, 0, 0.793*self.height), "rotation": (0, 1.5708, 0)},
-            {"name": "stomach", "radius": 0.106*self.height/2, "location": (0, 0, 0.641*self.height)},
-            {"name": "hips", "radius": 0.07*self.height/2, "height": 0.05*self.height+ 0.07*self.height, "location": (0, 0, 0.534 * self.height), "rotation": (0, 1.5708, 0)},
-            {"name": "upper_leg_L", "radius": 0.025*self.height, "height": 0.244*self.height, "location": (-0.07*self.height/2, 0, 0.289 * self.height + 0.244*self.height/2)},
-            {"name": "upper_leg_R", "radius": 0.025*self.height, "height": 0.244*self.height, "location": (0.07*self.height/2, 0, 0.289 * self.height+0.244*self.height/2)},
-            {"name": "lower_leg_L", "radius": 0.025*self.height, "height": 0.239*self.height, "location": (-0.07*self.height/2, 0, 0.05*self.height + 0.239*self.height/2)},
-            {"name": "lower_leg_R", "radius": 0.025*self.height, "height": 0.239*self.height, "location": (0.07*self.height/2, 0, 0.05*self.height + 0.239*self.height/2)},
-            {"name": "foot_L", "radius": 0.025*self.height,  "location": (-0.07*self.height/2, 0,  0.025*self.height)},
-            {"name": "foot_R", "radius": 0.025*self.height,  "location": (0.07*self.height/2, 0,  0.025*self.height)},
+            {"name": "chest", "radius": 0.1*self.height, "location": (0, 0, 0.7708*self.height)},
+            {"name": "stomach", "radius": 0.075*self.height, "location": (0, 0, 0.595*self.height)},
+            {"name": "hips", "radius": 0.05*self.height, "height": 0.15*self.height, "location": (0, 0, 0.4708*self.height),              "rotation": (0, 1.5708, 0)},
+            {"name": "collar_L", "radius": 0.0375*self.height, "height": 0.1*self.height, "location": (-0.05*self.height, 0, 0.8125*self.height),      "rotation": (0, 1.5708, 0)},
+            {"name": "collar_R", "radius": 0.0375*self.height, "height": 0.1*self.height, "location": (0.05*self.height, 0, 0.8125*self.height),       "rotation": (0, 1.5708, 0)},
+            {"name": "upper_arm_L", "radius": 0.03*self.height, "height": 0.1875*self.height, "location": (-0.1938*self.height, 0, 0.8125*self.height),  "rotation": (0, 1.5708, 0)},
+            {"name": "upper_arm_R", "radius": 0.03*self.height, "height": 0.1875*self.height, "location": (0.1938*self.height, 0, 0.8125*self.height),   "rotation": (0, 1.5708, 0)},
+            {"name": "lower_arm_L", "radius": 0.029*self.height, "height": 0.1667*self.height, "location": (-0.3708*self.height, 0, 0.8125*self.height),    "rotation": (0, 1.5708, 0)},
+            {"name": "lower_arm_R", "radius": 0.029*self.height, "height": 0.1667*self.height, "location": (0.3708*self.height, 0, 0.8125*self.height),     "rotation": (0, 1.5708, 0)},
+            {"name": "hand_L", "radius": 0.03*self.height,  "location": (-0.4708*self.height, 0, 0.8125*self.height),                       "rotation": (0, 1.5708, 0)},
+            {"name": "hand_R", "radius": 0.03*self.height,  "location": (0.4708*self.height, 0, 0.8125*self.height),                        "rotation": (0, 1.5708, 0)},
+            {"name": "upper_leg_L", "radius": 0.03*self.height, "height": 0.2083*self.height, "location": (-0.0417*self.height, 0, 0.325*self.height)},
+            {"name": "upper_leg_R", "radius": 0.03*self.height, "height": 0.2083*self.height, "location": (0.0417*self.height, 0, 0.325*self.height)},
+            {"name": "lower_leg_L", "radius": 0.029*self.height, "height": 0.1667*self.height, "location": (-0.0417*self.height, 0, 0.1375*self.height)},
+            {"name": "lower_leg_R", "radius": 0.029*self.height, "height": 0.1667*self.height, "location": (0.0417*self.height, 0, 0.1375*self.height)},
+            {"name": "foot_L", "radius": 0.03*self.height,  "location": (-0.0417*self.height, 0, 0.03*self.height)},
+            {"name": "foot_R", "radius": 0.03*self.height,  "location": (0.0417*self.height, 0, 0.03*self.height)},
         ]
-
+        
         
 
         
@@ -194,7 +194,7 @@ def main():
     bpy.ops.object.select_by_type(type='MESH')
     bpy.ops.object.delete()
     
-    body = Body(False, 1.80, 5, 86, canDoPullup=True, canDoPistleSquat=True)
+    body = Body(False, 2.4, 5, 86, canDoPullup=True, canDoPistleSquat=True)
     
     
     # Example usage
