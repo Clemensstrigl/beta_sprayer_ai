@@ -18,15 +18,18 @@ class Body():
         self.skeleton = self.add_armature(self.body_parts)
 
 
-    def create_pipe(self,name, radius, height, location, rotation=(0, 0, 0)):
+    def create_pipe(self,name, radius, height, location, rotation=(0, 0, 0), active="ACTIVE"):
         bpy.ops.mesh.primitive_cylinder_add(radius=radius, depth=height, location=location, rotation=rotation)
         pipe = bpy.context.object
         pipe.name = name
+        bpy.ops.rigidbody.object_add(type=active)
+
         return pipe
     
-    def create_sphere(self,name, radius, location, rotation=(0, 0, 0)):
+    def create_sphere(self,name, radius, location, rotation=(0, 0, 0), active="ACTIVE"):
         bpy.ops.mesh.primitive_ico_sphere_add(radius=radius, location=location, rotation=rotation)
         sphere = bpy.context.object
+        bpy.ops.rigidbody.object_add(type=active)
         sphere.name = name
         return sphere
     
@@ -36,25 +39,46 @@ class Body():
 
 
         return [
-            {"name": "head", "radius": 0.0625*self.height, "location": (0, 0, 0.9375*self.height), "active": False},
-            #{"name": "neck", "radius": 0.03, "height": 0.3, "location": (0, 0, 1.8)},
-            {"name": "chest", "radius": 0.1*self.height, "location": (0, 0, 0.7708*self.height),"active": False},
-            {"name": "stomach", "radius": 0.075*self.height, "location": (0, 0, 0.595*self.height)},
-            {"name": "hips", "radius": 0.05*self.height, "height": 0.15*self.height, "location": (0, 0, 0.4708*self.height),              "rotation": (0, 1.5708, 0)},
-            {"name": "collar", "radius": 0.0375*self.height, "height": 0.2*self.height, "location": (0, 0, 0.8125*self.height),      "rotation": (0, 1.5708, 0)},
+            {"name": "head", "weight":0.0826 *self.weight,    "radius": 0.0625*self.height, "location": [0, 0, 0.9375*self.height], "active": False, "is_joint": False},
+            #{"name": "neck", "weight":0. *self.weight,"radius": 0.03, "height": 0.3, "location": (0, 0, 1.8)},
+            {"name": "chest", "weight":0.21 *self.weight,"radius": 0.1*self.height, "location": [0, 0, 0.7708*self.height],"active": False, "is_joint": False},
+            {"name": "stomach", "weight":0.131 *self.weight,  "radius": 0.075*self.height, "location": [0, 0, 0.595*self.height], "is_joint": False},
+            {"name": "hips", "weight":0.137 *self.weight, "radius": 0.05*self.height, "height": 0.15*self.height, "location": [0, 0, 0.4708*self.height],              "rotation": (0, 1.5708, 0), "is_joint": False},
+            #{"name": "collar", "weight":0.02 *self.weight, "radius": 0.0375*self.height, "height": 0.2*self.height, "location": (0, 0, 0.8125*self.height),      "rotation": (0, 1.5708, 0)},
             #{"name": "collar_R", "radius": 0.0375*self.height, "height": 0.1*self.height, "location": (0.05*self.height, 0, 0.8125*self.height),       "rotation": (0, 1.5708, 0)},
-            {"name": "upper_arm_L", "radius": 0.03*self.height, "height": 0.1875*self.height + ape_index_addon, "location": (-0.1938*self.height - ape_index_center_offset, 0, 0.8125*self.height),  "rotation": (0, 1.5708, 0)},
-            {"name": "upper_arm_R", "radius": 0.03*self.height, "height": 0.1875*self.height + ape_index_addon, "location": (0.1938*self.height+ ape_index_center_offset, 0, 0.8125*self.height),   "rotation": (0, 1.5708, 0)},
-            {"name": "lower_arm_L", "radius": 0.029*self.height, "height": 0.1667*self.height + ape_index_addon, "location": (-0.3708*self.height- ape_index_addon -ape_index_center_offset, 0, 0.8125*self.height),    "rotation": (0, 1.5708, 0)},
-            {"name": "lower_arm_R", "radius": 0.029*self.height, "height": 0.1667*self.height + ape_index_addon, "location": (0.3708*self.height+ ape_index_addon + ape_index_center_offset, 0, 0.8125*self.height),     "rotation": (0, 1.5708, 0)},
-            {"name": "hand_L", "radius": 0.03*self.height,  "location": (-0.4708*self.height- ape_index_addon*2, 0, 0.8125*self.height),                       "rotation": (0, 1.5708, 0)},
-            {"name": "hand_R", "radius": 0.03*self.height,  "location": (0.4708*self.height+ ape_index_addon*2, 0, 0.8125*self.height),                        "rotation": (0, 1.5708, 0)},
-            {"name": "upper_leg_L", "radius": 0.03*self.height, "height": 0.2083*self.height, "location": (-0.0417*self.height, 0, 0.325*self.height)},
-            {"name": "upper_leg_R", "radius": 0.03*self.height, "height": 0.2083*self.height, "location": (0.0417*self.height, 0, 0.325*self.height)},
-            {"name": "lower_leg_L", "radius": 0.029*self.height, "height": 0.1667*self.height, "location": (-0.0417*self.height, 0, 0.1375*self.height)},
-            {"name": "lower_leg_R", "radius": 0.029*self.height, "height": 0.1667*self.height, "location": (0.0417*self.height, 0, 0.1375*self.height)},
-            {"name": "foot_L", "radius": 0.03*self.height,  "location": (-0.0417*self.height, 0, 0.03*self.height)},
-            {"name": "foot_R", "radius": 0.03*self.height,  "location": (0.0417*self.height, 0, 0.03*self.height)},
+            {"name": "upper_arm_L", "weight":0.0325 *self.weight, "radius": 0.03*self.height, "height": 0.1875*self.height + ape_index_addon, "location": [-0.1938*self.height - ape_index_center_offset, 0, 0.8125*self.height],  "rotation": (0, 1.5708, 0), "is_joint": False},
+            {"name": "upper_arm_R", "weight":0.0325 *self.weight,"radius": 0.03*self.height, "height": 0.1875*self.height + ape_index_addon, "location": [0.1938*self.height+ ape_index_center_offset, 0, 0.8125*self.height],   "rotation": (0, 1.5708, 0), "is_joint": False},
+            {"name": "lower_arm_L", "weight":0.0187 *self.weight, "radius": 0.029*self.height, "height": 0.1667*self.height + ape_index_addon, "location": [-0.3708*self.height- ape_index_addon -ape_index_center_offset, 0, 0.8125*self.height],    "rotation": (0, 1.5708, 0), "is_joint": False},
+            {"name": "lower_arm_R", "weight":0.0187 *self.weight,"radius": 0.029*self.height, "height": 0.1667*self.height + ape_index_addon, "location": [0.3708*self.height+ ape_index_addon + ape_index_center_offset, 0, 0.8125*self.height],     "rotation": (0, 1.5708, 0), "is_joint": False},
+            {"name": "hand_L", "weight":0.0065 *self.weight,"radius": 0.03*self.height,  "location": [-0.4708*self.height- ape_index_addon*2, 0, 0.8125*self.height],                       "rotation": (0, 1.5708, 0), "is_joint": False},
+            {"name": "hand_R", "weight":0.0065 *self.weight,"radius": 0.03*self.height,  "location": [0.4708*self.height+ ape_index_addon*2, 0, 0.8125*self.height],                        "rotation": (0, 1.5708, 0), "is_joint": False},
+            {"name": "upper_leg_L", "weight":0.105 *self.weight,"radius": 0.03*self.height, "height": 0.2083*self.height, "location": [-0.0417*self.height, 0, 0.325*self.height], "is_joint": False},
+            {"name": "upper_leg_R", "weight":0.105 *self.weight, "radius": 0.03*self.height, "height": 0.2083*self.height, "location": [0.0417*self.height, 0, 0.325*self.height], "is_joint": False},
+            {"name": "lower_leg_L", "weight":0.0475 *self.weight,"radius": 0.029*self.height, "height": 0.1667*self.height, "location": [-0.0417*self.height, 0, 0.1375*self.height], "is_joint": False},
+            {"name": "lower_leg_R", "weight":0.0475 *self.weight,"radius": 0.029*self.height, "height": 0.1667*self.height, "location": [0.0417*self.height, 0, 0.1375*self.height], "is_joint": False},
+            {"name": "foot_L", "weight":0.0143 *self.weight,"radius": 0.03*self.height,  "location": [-0.0417*self.height, 0, 0.03*self.height], "is_joint": False},
+            {"name": "foot_R", "weight":0.0143*self.weight,"radius": 0.03*self.height,  "location": [0.0417*self.height, 0, 0.03*self.height], "is_joint": False},
+
+           
+
+
+            {"name": "neck","weight":0.02 *self.weight, "radius": 0.0375*self.height, "location": [0, 0, 0.875*self.height], "is_joint": True,"virtical": True, "parent": ["chest", "head"], "connecting_joint": "head"},
+            {"name": "lumb_1","weight":0.02 *self.weight, "radius": 0.0375*self.height, "location": [0, 0, 0.67*self.height], "is_joint": True,"virtical": True, "parent": ["stomach", "chest"], "connecting_joint": "neck"},
+            {"name": "lumb_2","weight":0.02 *self.weight, "radius": 0.0375*self.height, "location": [0, 0, 0.5208*self.height], "is_joint": True,"virtical": True, "parent": ["hips", "stomach"], "connecting_joint": "lumb_1"},
+            {"name": "lumb_3","weight":0.02 *self.weight, "radius": 0.0375*self.height, "location": [0, 0, 0.4208*self.height], "is_joint": True,"virtical": True, "connecting_joint": "lumb_2"},
+
+            
+
+            {"name": "collar_L", "weight":0.02 *self.weight, "radius": 0.0375*self.height, "location": [-0.1*self.height, 0, 0.8125*self.height], "is_joint": True, "virtical": False,"parent": ["chest", "upper_arm_L"], "connecting_joint": "elbow_L"},
+            {"name": "collar_R", "weight":0.02 *self.weight, "radius": 0.0375*self.height, "location":[0.1*self.height, 0, 0.8125*self.height], "is_joint": True, "virtical": False,"parent": ["chest", "upper_arm_R"], "connecting_joint": "elbow_R"},
+            {"name": "elbow_L", "weight":0.0325 *self.weight, "radius": 0.0375*self.height,  "location": [-0.2874*self.height - ape_index_addon, 0, 0.8125*self.height], "is_joint": True , "virtical": False,"parent": ["upper_arm_L", "lower_arm_L"], "connecting_joint": "hand_L"},
+            {"name": "elbow_R", "weight":0.0325 *self.weight,"radius": 0.0375*self.height, "location": [0.2874*self.height+ ape_index_addon, 0, 0.8125*self.height],  "is_joint": True, "virtical": False,"parent": ["upper_arm_R", "lower_arm_R"], "connecting_joint": "hand_R"},
+            
+            {"name": "hip_L", "weight":0.105 *self.weight,"radius": 0.0375*self.height, "location": [-0.0417*self.height, 0, 0.4291*self.height],"is_joint": True,"virtical": True,"parent": ["chest", "upper_arm_R"], "connecting_joint": "knee_L"},
+            {"name": "hip_R", "weight":0.105 *self.weight, "radius": 0.0375*self.height, "location": [0.0417*self.height, 0, 0.4291*self.height],"is_joint": True,"virtical": True, "parent": ["chest", "upper_arm_R"], "connecting_joint": "knee_R"},
+            {"name": "knee_L", "weight":0.105 *self.weight,"radius": 0.0375*self.height, "location": [-0.0417*self.height, 0, 0.2209*self.height],"is_joint": True,"virtical": True,"parent": ["chest", "upper_arm_R"], "connecting_joint": "foot_L"},
+            {"name": "knee_R", "weight":0.105 *self.weight, "radius": 0.0375*self.height, "location": [0.0417*self.height, 0, 0.2208*self.height],"is_joint": True,"virtical": True, "parent": ["chest", "upper_arm_R"], "connecting_joint": "foot_R"},
+            
         ]
     
     def get_segment_attr(self, segment, attr):
@@ -65,15 +89,21 @@ class Body():
                 elif attr == "height":
                     return s["radius"]*2
                 return None
+        return None
+    
+    def get_joint_parent(self, child):
+        for s in self.body_segments:
+            if not s["is_joint"]:
+                continue
+            if s["connecting_joint"] == child:
+                return s["name"]
+        
+        return None
 
     def create_body(self,):
         body_parts = {}
         
        
-
-        
-        
-
         
         # Create pipes for each body segment
         for segment in self.body_segments:
@@ -86,30 +116,7 @@ class Body():
             
         return body_parts
     
-    def get_obj_loc(self, obj_name):
-        if "collar" in obj_name:
-            if "L" in obj_name:
-                loc = list(self.get_segment_attr("collar", "location"))
-                loc[0] = loc[0] - self.get_segment_attr("collar", "height")/2
-                return tuple(loc)
-            if "R" in obj_name:
-                loc = list(self.get_segment_attr("collar", "location"))
-                loc[0] = loc[0] + self.get_segment_attr("collar", "height")/2
-                return tuple(loc)
-            return self.get_segment_attr("collar", "location")
-        if "hips" in obj_name:
-            if "L" in obj_name:
-                loc = list(self.get_segment_attr("hips", "location"))
-                loc[0] = list(self.get_segment_attr("lower_leg_L", "location"))[0]
-                return tuple(loc)
-            if "R" in obj_name:
-                loc = list(self.get_segment_attr("hips", "location"))
-                loc[0] = list(self.get_segment_attr("lower_leg_R", "location"))[0]
-                return tuple(loc)
-            return self.get_segment_attr("hips", "location")
 
-        return self.get_segment_attr(obj_name, "location")
-        
             
 
         
@@ -124,140 +131,146 @@ class Body():
         bpy.ops.object.mode_set(mode='EDIT')
         
         edit_bones = armature.data.edit_bones
-        
-        # Define bones and their connections
-        bones_data = [
-            #("chest", None),
-
-            ("chest", "stomach"),
-            ("stomach", "hips"),
-            ("collar", "chest"),
-            ("head", "collar"),
-
-            ("collar_L", "collar"),
-            ("collar_R", "collar"),
-            ("collar", "chest"),
-            ("upper_arm_L", "collar_L"),
-            ("upper_arm_R", "collar_R"),
-            ("lower_arm_L", "upper_arm_L"),
-            ("lower_arm_R", "upper_arm_R"),
-            ("hand_L", "lower_arm_L"),
-            ("hand_R", "lower_arm_R"),
-            ("hips_L", "hips"),
-            ("hips_R", "hips"),
-            ("upper_leg_L", "hips_L"),
-            ("upper_leg_R", "hips_R"),
-            ("lower_leg_L", "upper_leg_L"),
-            ("lower_leg_R", "upper_leg_R"),
-            ("foot_L", "lower_leg_L"),
-            ("foot_R", "lower_leg_R"),
-        ]
-
-
-
-
-
-
-
-
-
+    
 
         
-        for bone_name, parent_name in bones_data:
-            bone = edit_bones.new(bone_name)
-            parent_loc = list(self.get_obj_loc(parent_name))
-            child_loc = list(self.get_obj_loc(bone_name))
-            bone_length = self.get_segment_attr(bone_name, "height")
+        for segment in self.body_segments:
+
+            if not segment["is_joint"]:
+                continue
+
+            seg_name = segment["name"]
+            print("Joint Name: " + seg_name)
+            seg_loc = self.get_segment_attr(seg_name, "location")
 
 
-            if "collar" in parent_name:
-                if "collar_L" in bone_name:
-                    child_loc[0] = body_parts[parent_name].location[0] - self.get_segment_attr(parent_name, "height")/2
-                    bone_length = self.get_segment_attr(parent_name, "height")/2
 
-                elif "collar_R" in bone_name:
-                    child_loc[0] = body_parts[parent_name].location[0] + self.get_segment_attr(parent_name, "height")/2
-                    bone_length = self.get_segment_attr(parent_name, "height")/2
 
-                elif "arm_L" in bone_name:
-                    parent_loc[0] = body_parts["collar"].location[0] - self.get_segment_attr("collar", "height")/2
-                    child_loc[0] = body_parts[bone_name].location[0] - self.get_segment_attr(bone_name, "height")/2
+            bone = edit_bones.new(seg_name)
+            bone.head = seg_loc
+            print("Bone name: " + bone.name)
 
-                elif "arm_R" in bone_name:
-                    parent_loc[0] = body_parts["collar"].location[0] + self.get_segment_attr("collar", "height")/2
-                    child_loc[0] = body_parts[bone_name].location[0] + self.get_segment_attr(bone_name, "height")/2
+            connecting_segment_name = self.get_segment_attr(seg_name, "connecting_joint")
+            print(seg_name, connecting_segment_name)
+            connecting_segment_loc = self.get_segment_attr(connecting_segment_name, "location")
 
-            
+            obser_indx = 0
 
-                    
-            elif "hips" in parent_name:
-                if "hips_L" in bone_name:
+            if self.get_segment_attr(seg_name, "virtical"):
+                obser_indx = 2
 
-                    child_loc[0] = self.get_segment_attr("upper_leg_L","location")[0]
-                    bone_length = self.get_segment_attr(parent_name, "height")/2 + self.get_segment_attr("upper_leg_L", "radius")/2
-
-                elif "hips_R" in bone_name:
-                    child_loc[0] = self.get_segment_attr("upper_leg_R","location")[0]
-                    bone_length = self.get_segment_attr(parent_name, "height")/2 + self.get_segment_attr("upper_leg_L", "radius")/2
+            if not self.get_segment_attr(connecting_segment_name, "is_joint"):
+                multiplier = 1
+                if seg_loc[obser_indx] > connecting_segment_loc[obser_indx]:
+                    multiplier = -1
                 
-                elif "leg_L" in bone_name:
-                    print(bone_name)
-                    child_loc[2] = child_loc[2] - self.get_segment_attr(bone_name, "height")/2
 
-                elif "leg_R" in bone_name:
-                    child_loc[2] = child_loc[2] - self.get_segment_attr(bone_name, "height")/2
+                connecting_segment_loc[obser_indx] = connecting_segment_loc[obser_indx] + multiplier * self.get_segment_attr(connecting_segment_name, "radius")
 
-
-            elif 'leg' in parent_name:
-                child_loc = body_parts[bone_name].location
-                parent_loc[2] = parent_loc[2] - self.get_segment_attr(parent_name, "height")/2
-                child_loc[2] = child_loc[2] - self.get_segment_attr(bone_name, "height")/2
-
-            elif 'arm' in parent_name:
-                child_loc = body_parts[bone_name].location
-                if "L" in parent_name:
-                    parent_loc[0] = parent_loc[0] - self.get_segment_attr(parent_name, "height")/2
-                    child_loc[0] = child_loc[0] - self.get_segment_attr(bone_name, "height")/2
-                if "R" in parent_name:
-                    parent_loc[0] = parent_loc[0] + self.get_segment_attr(parent_name, "height")/2
-                    child_loc[0] = child_loc[0] + self.get_segment_attr(bone_name, "height")/2
-
-            print(bone_name)
-            bone.length = bone_length
-            bone.head = tuple(parent_loc)
-            if child_loc:
-                bone.tail = tuple(child_loc)
+            bone.tail = connecting_segment_loc
+            #bone.length = abs(seg_loc[obser_indx] - connecting_segment_loc[obser_indx])
+            
             
          
             
-            if parent_name in edit_bones:
-                bone.parent = edit_bones[parent_name]
+        for segment in self.body_segments:
+            if not segment["is_joint"]:
+                continue
             
+            seg_name = segment["name"]
+
+
+            parent_name = self.get_joint_parent(seg_name)
+            if parent_name:
+                edit_bones[seg_name].parent = edit_bones[parent_name]    
         
 
         for b in armature.data.edit_bones:
-            print(b)
-            if "Bone" in b.name:
-                armature.data.edit_bones.remove(b)
+           print(b)
+           if "Bone" in b.name:
+               armature.data.edit_bones.remove(b)
 
         bpy.ops.object.mode_set(mode='OBJECT') # Exit edit mode after parenting
 
 
+
+
         # Parent each body part to its corresponding bone and hide the body parts
         for bone_name, body_part in body_parts.items():
+            if not self.get_segment_attr(body_part.name, "is_joint"):
+                continue
             print(bone_name, body_part.name)
             body_part.select_set(True)
             bpy.context.view_layer.objects.active = armature
-            if "hips" in bone_name:
-                bone_name = "stomach"
+            
             armature.data.bones.active = armature.data.bones[bone_name]
 
             bpy.ops.object.mode_set(mode='EDIT')
 
             bpy.ops.object.parent_set(type='BONE', keep_transform=True)
+
+            offset = None
+
+            # Create or get the vertex group
+            if bone_name not in body_part.vertex_groups:
+                body_part.vertex_groups.new(name=bone_name)
+            vertex_group = body_part.vertex_groups[bone_name]
+            # Assign weight 1.0 to all vertices
+            percentage_per_vertex = 1/len(body_part.data.vertices)
+            print("Percentage weight per vertex: %f" % percentage_per_vertex)
+            for v in body_part.data.vertices:
+                vertex_group.add([v.index], percentage_per_vertex * self.get_segment_attr(body_part.name, "weight"), 'REPLACE')
+
+
+            # if offset:
+            #     bpy.ops.object.empty_add(type='PLAIN_AXES', align='WORLD', location=(0, 0, 0))
+            #     empty = bpy.context.object
+            #     empty.name = "OffsetEmpty" 
+            #     # Position the empty (Adjust offset as needed)
+            #     empty.location = bone_to_parent_to.head + (0, 0, -0.5)  
+            #     # Parent the empty to the bone
+            #     bpy.context.view_layer.objects.active = empty
+            #     bpy.ops.object.parent_set(type='BONE', keep_transform=True)
+            #     # Parent the object to the empty
+            #     bpy.context.view_layer.objects.active = bpy.data.objects["TubeMesh"]
+            #     bpy.ops.object.parent_set(type='OBJECT', keep_transform=True)
+
+
+
             bpy.ops.object.mode_set(mode='OBJECT') # Exit edit mode after parenting
-            bpy.ops.object.hide_viewport = True  # Hide body parts
             bpy.ops.object.select_all(action='DESELECT') #deselect all objects
+        
+
+        for bone_name, body_part in body_parts.items():
+               
+                bpy.context.view_layer.objects.active = body_part
+                bpy.ops.object.hide_viewport = True  # Hide body parts
+
+
+                bpy.ops.object.constraint_add(type='CHILD_OF')
+                bpy.context.object.constraints["Child Of"].target = bpy.data.objects["Armature"]
+                bpy.context.object.constraints["Child Of"].subtarget = bone_name
+                bpy.ops.constraint.childof_clear_inverse(constraint="Child Of", owner='OBJECT')
+                bpy.ops.constraint.childof_set_inverse(constraint="Child Of", owner='OBJECT')
+
+
+                parent_obj_names = self.get_segment_attr(body_part.name, "parent")
+                if parent_obj_names:
+                    body_part.select_set(True)
+
+                    
+                    bpy.ops.rigidbody.constraint_add()
+                    bpy.context.object.rigid_body_constraint.object1 = bpy.data.objects[parent_obj_names[0]]
+                    bpy.context.object.rigid_body_constraint.object2 = bpy.data.objects[parent_obj_names[1]]
+
+
+
+                
+
+
+
+                bpy.ops.object.select_all(action='DESELECT') #deselect all objects
+
 
         
 
